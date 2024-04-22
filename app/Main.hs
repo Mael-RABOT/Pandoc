@@ -1,6 +1,11 @@
-module Main (main) where
+module Main where
 
-import Lib
+import Json (parseJson)
+import Xml (parseXml)
+import Parse (Parser(..))
 
 main :: IO ()
-main = someFunc
+-- main = pure ()
+main = do
+    readFile "test/example.json" >>= print . runParser parseJson
+    readFile "test/example.xml" >>= print . runParser parseXml
