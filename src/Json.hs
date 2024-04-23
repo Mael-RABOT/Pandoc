@@ -4,7 +4,8 @@
 -- File description:
 -- Json.hs
 -}
-{-# LANGUAGE LambdaCase #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use lambda-case" #-}
 
 module Json (parseJson) where
 
@@ -38,15 +39,17 @@ parseJsonValue =
     <|> parseJsonDict
 
 parseJsonNull :: Parser JsonValue
-parseJsonNull = Parser $ \case
-        "null" -> Right (JsonNull, "")
-        _ -> Left "Expected 'null'"
+parseJsonNull = Parser $ \input ->
+    case input of
+        "null"  -> Right (JsonNull, "")
+        _       -> Left "Expected 'null'"
 
 parseJsonBool :: Parser JsonValue
-parseJsonBool = Parser $ \case
-        "true" -> Right (JsonBool True, "")
+parseJsonBool = Parser $ \input ->
+    case input of
+        "true"  -> Right (JsonBool True, "")
         "false" -> Right (JsonBool False, "")
-        _ -> Left "Expected 'true' or 'false'"
+        _       -> Left "Expected 'true' or 'false'"
 
 parseJsonNumber :: Parser JsonValue
 parseJsonNumber = Parser $ \input ->

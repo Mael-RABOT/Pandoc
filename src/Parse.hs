@@ -4,12 +4,13 @@
 -- File description:
 -- Parse.hs
 -}
-{-# LANGUAGE LambdaCase #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use lambda-case" #-}
 
 module Parse (parseChar, parseInt, parseMany, parseSome,
     parseSpaces, sepByChar, parseString, Parser(..), parseSatisfy) where
 
-import Control.Applicative
+import Control.Applicative ( Alternative((<|>), empty) )
 import Text.Read (readMaybe)
 import Data.Char (isSpace)
 
@@ -46,7 +47,8 @@ instance Monad Parser where
             Left err -> Left err
 
 parseChar :: Char -> Parser Char
-parseChar c = Parser $ \case
+parseChar c = Parser $ \input ->
+    case input of
         (x:xs)
             | c == x -> Right (c, xs)
             | otherwise -> Left $ "Expected '" ++ [c] ++
@@ -93,14 +95,16 @@ sepByChar p delim = parseSpaces >> collectValues <|> pure []
         return (first : rest)
 
 parseString :: Parser String
-parseString = Parser $ \case
+parseString = Parser $ \input ->
+    case input of
         ('"':rest) -> case span (/= '"') rest of
             (str, '"':xs) -> Right (str, xs)
             _ -> Left "Unterminated string"
         _ -> Left "Expected string"
 
 parseSatisfy :: (Char -> Bool) -> Parser Char
-parseSatisfy f = Parser $ \case
+parseSatisfy f = Parser $ \input ->
+    case input of
         (x:xs)
             | f x -> Right (x, xs)
             | otherwise -> Left "Parse error: satisfying predicate failed"
