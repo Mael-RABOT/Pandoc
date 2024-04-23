@@ -21,5 +21,5 @@ fclean: clean
 
 re: fclean all
 
-test:	all
+tests_run:	all
 	stack test
