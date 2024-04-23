@@ -2,10 +2,10 @@
 -- EPITECH PROJECT, 2024
 -- B-FUN-400-LYN-4-1-mypandoc-mael.rabot
 -- File description:
--- Types.hs
+-- Parse.hs
 -}
 
-module Types where
+module Types () where
 
 type Optional = Maybe
 
