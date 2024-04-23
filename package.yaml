@@ -44,6 +44,8 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -Wall
+    - -fno-warn-unused-top-binds
     dependencies:
     - mypandoc
 
@@ -56,4 +58,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - mypandoc
+    - HUnit
