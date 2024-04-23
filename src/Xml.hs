@@ -1,3 +1,10 @@
+{-
+-- EPITECH PROJECT, 2024
+-- B-FUN-400-LYN-4-1-mypandoc-mael.rabot
+-- File description:
+-- Xml.hs
+-}
+
 module Xml (parseXml) where
 
 import Data.Char (isAlphaNum, isSpace)
@@ -29,7 +36,7 @@ parseTagName = parseSome (parseSatisfy isAlphaNum)
 parseText :: Parser String
 parseText = do
     text <- parseSome (parseSatisfy isAlphaNum)
-    return (text)
+    pure (text)
 
 parseClosingTag :: String -> Parser XmlTag
 parseClosingTag tagName = do
@@ -37,15 +44,15 @@ parseClosingTag tagName = do
     parseChar '/'
     closingTagName <- parseTagName
     if closingTagName == tagName
-        then do
-            parseChar '>'
-            return (XmlTag closingTagName [(Text "")] [])
+        then
+            parseChar '>' *>
+            pure (XmlTag closingTagName [(Text "")] [])
         else
             Parser $ \_ -> Left "Mismatched closing XmlTag"
 
 parseTagText :: Parser TagValue
 parseTagText = parseSome (parseSatisfy (\c -> c /= '<')) >>=
-    (\x -> return (Text x))
+    (\x -> pure (Text x))
 
 
 parseTagValue :: Parser TagValue
@@ -58,7 +65,7 @@ parseAttribute = do
     parseChar '='
     parseSpaces
     value <- parseString
-    return (key, value)
+    pure (key, value)
 
 filterEmpty :: [TagValue] -> [TagValue]
 filterEmpty origin = filter (not . isEmpty) origin
@@ -75,7 +82,7 @@ parseTag = do
     parseChar '>'
     tagContent <- ((parseSome parseTagValue) <|> pure [])
     parseClosingTag tagName
-    return (Tag (XmlTag tagName (filterEmpty tagContent) attrs))
+    pure (Tag (XmlTag tagName (filterEmpty tagContent) attrs))
 
 parseXml :: Parser TagValue
 parseXml = parseTag

@@ -1,4 +1,11 @@
-module Parse (parseChar, parseInt, parseTuple, parseMany, parseSome,
+{-
+-- EPITECH PROJECT, 2024
+-- B-FUN-400-LYN-4-1-mypandoc-mael.rabot
+-- File description:
+-- Parse.hs
+-}
+
+module Parse (parseChar, parseInt, parseMany, parseSome,
     parseSpaces, sepByChar, parseString, Parser(..), parseSatisfy) where
 
 import Control.Applicative
@@ -42,7 +49,8 @@ parseChar c = Parser $ \input ->
     case input of
         (x:xs)
             | c == x -> Right (c, xs)
-            | otherwise -> Left $ "Expected '" ++ [c] ++ "', found '" ++ [x] ++ "'"
+            | otherwise -> Left $ "Expected '" ++ [c] ++
+            "', found '" ++ [x] ++ "'"
         _ -> Left "Unexpected end of input"
 
 parseInt :: Parser Int
@@ -55,24 +63,12 @@ parseInt = Parser $ \input ->
                     Just n -> Right (n, rest)
                     Nothing -> Left "Invalid number format"
 
-parseTuple :: Parser a -> Parser (a, a)
-parseTuple parser = do
-    parseChar '('
-    parseSpaces
-    a <- parser
-    parseSpaces
-    _ <- parseChar ','
-    parseSpaces
-    b <- parser
-    parseSpaces
-    _ <- parseChar ')'
-    return (a, b)
-
 parseMany :: Parser a -> Parser [a]
 parseMany p = Parser $ \input ->
     let collectResults acc remaining =
             case runParser p remaining of
-                Right (result, remaining') -> collectResults (acc ++ [result]) remaining'
+                Right (result, remaining') ->
+                    collectResults (acc ++ [result]) remaining'
                 Left _ -> Right (acc, remaining)
     in collectResults [] input
 
