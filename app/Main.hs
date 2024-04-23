@@ -7,12 +7,26 @@
 
 module Main where
 
+import System.Environment (getArgs)
+import System.Exit (exitWith, ExitCode(..))
+import Data.Maybe (fromJust)
+
 import Json (parseJson)
 import Xml (parseXml)
 import Parse (Parser(..))
+import ArgsParser (parseArgs, Args(..))
+
+run :: Args -> IO ()
+run args = do
+    content <- readFile (fromJust $ inputFile args)
+    case inputFormat args of
+        Just "json" -> print . runParser parseJson $ content
+        Just "xml" -> print . runParser parseXml $ content
+        _ -> putStrLn "Invalid input format"
 
 main :: IO ()
--- main = pure ()
 main = do
-    readFile "test/example.json" >>= print . runParser parseJson
-    readFile "test/example.xml" >>= print . runParser parseXml
+    args <- getArgs
+    case parseArgs args of
+        Right args -> run args
+        Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
