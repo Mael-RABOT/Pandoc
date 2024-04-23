@@ -30,6 +30,7 @@ library
       Types
       Xml
       Json
+      Markdown
       ArgsParser
   other-modules:
       Paths_mypandoc
