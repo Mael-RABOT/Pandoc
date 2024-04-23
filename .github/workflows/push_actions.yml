@@ -74,7 +74,7 @@ jobs:
     name: Running tests
     runs-on: ubuntu-latest
     container:
-      image: epitechcontent/epitest-docker
+      image: ghcr.io/thomas-pommier-epi/epitest-fast:haskell
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
