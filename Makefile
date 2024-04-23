@@ -22,4 +22,4 @@ fclean: clean
 re: fclean all
 
 tests_run: all
-	stack test --allow-different-user
+	stack test --allow-different-user --coverage
