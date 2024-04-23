@@ -11,6 +11,7 @@ BINARY_PATH	=	`stack path --local-install-root`/bin
 
 all:
 	stack build --allow-different-user
+	stack test --allow-different-user
 	cp $(BINARY_PATH)/$(NAME)-exe ./$(NAME)
 
 clean:

@@ -78,6 +78,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Transfer stack root cache to user.
+        run: cp -r /root/.stack ~
+      - name: Permissions bug workaround for stack.
+        run: chown -R $(id -un):$(id -gn) ~
       - name: Execute tests
         timeout-minutes: 2
         run: make tests_run
