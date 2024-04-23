@@ -20,3 +20,6 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+test:	all
+	stack test
