@@ -1,0 +1,70 @@
+name: push-checker
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+env:
+  EXECUTABLES: "mypandoc"
+  ARGUMENTS: ""
+
+jobs:
+  check_coding_style:
+    name: "Check coding style."
+    runs-on: ubuntu-latest
+    container: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run checker.
+        run: check.sh $(pwd) $(pwd)
+      - name: Error(s)
+        run: |
+          while read -r line; do
+            echo "$line"
+            file=$(echo "$line" | awk -F ':' '{print $1}' | cut -c 3-)
+            nb=$(echo "$line" | awk -F ':' '{print $2}')
+            type=$(echo "$(echo "$line" | awk -F ':' '{print $3}' | cut -c 2-) coding style error")
+            error=$(echo "$line" | awk -F ':' '{print $4}')
+            echo "::error file=./$file,line=$nb,title=$type:: $error"
+          done < coding-style-reports.log
+          while read -r line; do
+            exit 1;
+          done < coding-style-reports.log
+
+  check_compilation:
+    name: "Check binary compilation."
+    runs-on: ubuntu-latest
+    container: ghcr.io/thomas-pommier-epi/epitest-fast:haskell
+    steps:
+      - name: Checkout.
+        uses: actions/checkout@v4
+      - name: Transfer stack root cache to user.
+        run: cp -r /root/.stack ~
+      - name: Permissions bug workaround for stack.
+        run: chown -R $(id -un):$(id -gn) ~
+      - name: Build binary.
+        timeout-minutes: 10
+        run: |
+          make
+          if [ $? -ne 0 ]; then
+            echo "Make failed."
+            make clean
+            exit 1
+          fi
+      - name: Check binary.
+        timeout-minutes: 2
+        run: |
+          if [ ! -f "${{ env.EXECUTABLES }}" ]; then
+            echo "Bin not found : ${{ env.EXECUTABLES }}"
+            exit 1
+          fi
+      - name: Clear binary and objects.
+        timeout-minutes: 2
+        run: make fclean
