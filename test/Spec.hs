@@ -6,7 +6,7 @@ import Parse (Parser(..))
 
 tests :: Test
 tests = test [
-    "test1" ~: assertEqual "Testing parseJson with null" (Right (JsonNull, ".")) (runParser parseJson "null"),
+    "test1" ~: assertEqual "Testing parseJson with null" (Right (JsonNull, "")) (runParser parseJson "null"),
     "test2" ~: assertEqual "Testing parseJson with true" (Right ((JsonBool True), "")) (runParser parseJson "true"),
     "test3" ~: assertEqual "Testing parseJson with false" (Right ((JsonBool False), "")) (runParser parseJson "false"),
     "test4" ~: assertEqual "Testing parseJson with number" (Right ((JsonNumber 42), "")) (runParser parseJson "42"),
