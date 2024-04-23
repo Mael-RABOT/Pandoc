@@ -73,7 +73,8 @@ parseTextDataItalic = (parseChar '*' *> parseBase <* (parseChar '*')) >>=
     pure . Italic
 
 parseTextDataBold :: Parser TextData
-parseTextDataBold = (parsePrefix "**" *> parseBase <* (parseChar '*') <* (parseChar '*')) >>=
+parseTextDataBold = (parsePrefix "**" *> parseBase <* (parseChar '*')
+    <* (parseChar '*')) >>=
     pure . Bold
 
 parseTextDataCode :: Parser TextData
@@ -81,7 +82,11 @@ parseTextDataCode = (parseChar '`' *> parseBase <* (parseChar '`')) >>=
     pure . Code
 
 parseTextData :: Parser TextData
-parseTextData = parseTextDataCode <|> parseTextDataBold <|> parseTextDataItalic <|> parseTextDataNormal
+parseTextData =
+    parseTextDataCode
+    <|> parseTextDataBold
+    <|> parseTextDataItalic
+    <|> parseTextDataNormal
 
 parseList :: Parser Block
 parseList = (parseSome (parseSpaces *> (parseChar '-') *>
@@ -115,14 +120,19 @@ parseCodeBlock = (parsePrefix "```" *> parseSpaces *>
         pure . CodeBlock
 
 parseInline :: Parser Inline
-parseInline = parseLink <|> parseCodeBlock <|> (parseTextData >>= pure . Text)
+parseInline =
+    parseLink
+    <|> parseCodeBlock
+    <|> (parseTextData >>= pure . Text)
 
 parseParagraph :: Parser [Inline]
 parseParagraph = parseSome (parseSpaces *> parseInline)
 
 parseBlock :: Parser Block
-parseBlock = parseSection <|> parseList <|> (parseParagraph >>= pure . Paragraph)
--- <|>
+parseBlock =
+    parseSection
+    <|> parseList
+    <|> (parseParagraph >>= pure . Paragraph)
 
 parseBody :: Parser [Block]
 parseBody = parseSome (parseSpaces *> parseBlock)
