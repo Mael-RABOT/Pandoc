@@ -7,7 +7,7 @@
 
 NAME		=	mypandoc
 
-BINARY_PATH	=	$(shell stack path --local-install-root)/bin
+BINARY_PATH	=	`stack path --local-install-root`/bin
 
 all:
 	stack build --allow-different-user
