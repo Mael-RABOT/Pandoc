@@ -30,6 +30,7 @@ library
       Types
       Xml
       Json
+      Markdown
   other-modules:
       Paths_mypandoc
   autogen-modules:

@@ -9,6 +9,7 @@ module Main where
 
 import Json (parseJson)
 import Xml (parseXml)
+import Markdown (parseMarkdown)
 import Parse (Parser(..))
 
 main :: IO ()
@@ -16,3 +17,4 @@ main :: IO ()
 main = do
     readFile "test/example.json" >>= print . runParser parseJson
     readFile "test/example.xml" >>= print . runParser parseXml
+    readFile "test/example.md" >>= print . runParser parseMarkdown

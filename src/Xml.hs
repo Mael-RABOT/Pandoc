@@ -18,7 +18,6 @@ import Parse (
         parseSatisfy
     )
 
-
 data XmlTag = XmlTag {
     name :: String,
     content :: [TagValue],
