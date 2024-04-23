@@ -10,7 +10,7 @@ NAME		=	mypandoc
 BINARY_PATH	:=	$(shell stack path --local-install-root)
 
 all:
-	stack build
+	stack build --allow-different-user
 	cp $(BINARY_PATH)/bin/$(NAME)-exe ./$(NAME)
 
 clean:
