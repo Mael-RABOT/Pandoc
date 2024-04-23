@@ -1,3 +1,4 @@
+import System.Exit (exitWith, ExitCode(..))
 import Test.HUnit
 import Json
 import Xml (parseXml)
@@ -16,5 +17,7 @@ tests = test [
 
 main :: IO ()
 main = do
-  runTestTT tests
-  pure()
+  counts <- runTestTT tests
+  case counts of
+    Counts { errors = 0, failures = 0 } -> pure ()
+    _ -> exitWith (ExitFailure 1)

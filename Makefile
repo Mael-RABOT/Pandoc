@@ -21,5 +21,5 @@ fclean: clean
 
 re: fclean all
 
-test:	all
-	stack test
+tests_run: all
+	stack test --allow-different-user --coverage
