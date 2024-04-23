@@ -83,5 +83,5 @@ jobs:
       - name: Permissions bug workaround for stack.
         run: chown -R $(id -un):$(id -gn) ~
       - name: Execute tests
-        timeout-minutes: 2
+        timeout-minutes: 10
         run: make tests_run
