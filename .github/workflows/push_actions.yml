@@ -38,17 +38,17 @@ jobs:
             exit 1;
           done < coding-style-reports.log
 
-check_compilation:
-    name: Check bin compilation
+  check_compilation:
+    name: "Check binary compilation."
     runs-on: ubuntu-latest
     container: ghcr.io/thomas-pommier-epi/epitest-fast:haskell
     steps:
       - name: Checkout.
         uses: actions/checkout@v4
       - name: Transfer stack root cache to user.
-        run: "cp -r /root/.stack ~"
+        run: cp -r /root/.stack ~
       - name: Permissions bug workaround for stack.
-        run: "chown -R $(id -un):$(id -gn) ~"
+        run: chown -R $(id -un):$(id -gn) ~
       - name: Build binary.
         timeout-minutes: 10
         run: |
