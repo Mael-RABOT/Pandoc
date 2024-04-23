@@ -11,9 +11,14 @@ type Optional = Maybe
 
 data Header = Header {
     title :: String,
-    auhtor :: Optional String,
+    author :: Optional String,
     date :: Optional String
 } deriving (Show, Eq)
+
+data Links =
+  Link String String
+  | Image String String
+  deriving (Show, Eq)
 
 data Text =
     Normal String
@@ -22,17 +27,23 @@ data Text =
     | Code String
     deriving (Show, Eq)
 
-data Item =
-    Paragraph Text
-    | List [Item]
-    | Codeblock [Item]
-    | Section Block
+data Paragraph =
+    Text String
+    | Content [Item]
     deriving (Show, Eq)
 
-data Block = Block {
+data Section = Section {
     name :: Optional String,
-    items :: [Item]
+    content :: [Item]
 } deriving (Show, Eq)
+
+data Item =
+    ParagraphItem Paragraph
+    | ListItem [Item]
+    | SectionItem Section
+    | CodeBlockItem String
+    | LinksItem Links
+    deriving (Show, Eq)
 
 data UniversalContent = UniversalContent {
     header :: Header,
