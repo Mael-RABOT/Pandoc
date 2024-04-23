@@ -4,6 +4,9 @@
 -- File description:
 -- Xml.hs
 -}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use $>" #-}
+{-# HLINT ignore "Use <&>" #-}
 
 module Xml (parseXml) where
 
@@ -34,25 +37,22 @@ parseTagName :: Parser String
 parseTagName = parseSome (parseSatisfy isAlphaNum)
 
 parseText :: Parser String
-parseText = do
-    text <- parseSome (parseSatisfy isAlphaNum)
-    pure (text)
+parseText = parseSome (parseSatisfy isAlphaNum)
 
 parseClosingTag :: String -> Parser XmlTag
 parseClosingTag tagName = do
-    parseChar '<'
-    parseChar '/'
+    _ <- parseChar '<'
+    _ <- parseChar '/'
     closingTagName <- parseTagName
     if closingTagName == tagName
         then
             parseChar '>' *>
-            pure (XmlTag closingTagName [(Text "")] [])
+            pure (XmlTag closingTagName [Text ""] [])
         else
             Parser $ \_ -> Left "Mismatched closing XmlTag"
 
 parseTagText :: Parser TagValue
-parseTagText = parseSome (parseSatisfy (\c -> c /= '<')) >>=
-    (\x -> pure (Text x))
+parseTagText = parseSome (parseSatisfy (/= '<')) >>= (pure . Text)
 
 
 parseTagValue :: Parser TagValue
@@ -61,14 +61,14 @@ parseTagValue = parseTag <|> parseTagText
 parseAttribute :: Parser (String, String)
 parseAttribute = do
     key <- parseText
-    parseSpaces
-    parseChar '='
-    parseSpaces
+    _ <- parseSpaces
+    _ <- parseChar '='
+    _ <- parseSpaces
     value <- parseString
     pure (key, value)
 
 filterEmpty :: [TagValue] -> [TagValue]
-filterEmpty origin = filter (not . isEmpty) origin
+filterEmpty = filter (not . isEmpty)
     where
         isEmpty :: TagValue -> Bool
         isEmpty (Tag _) = False
@@ -76,12 +76,12 @@ filterEmpty origin = filter (not . isEmpty) origin
 
 parseTag :: Parser TagValue
 parseTag = do
-    parseChar '<'
+    _ <- parseChar '<'
     tagName <- parseTagName
-    attrs <- ((parseSome (parseSpaces *> parseAttribute)) <|> pure [])
-    parseChar '>'
-    tagContent <- ((parseSome parseTagValue) <|> pure [])
-    parseClosingTag tagName
+    attrs <- parseSome (parseSpaces *> parseAttribute) <|> pure []
+    _ <- parseChar '>'
+    tagContent <- parseSome parseTagValue <|> pure []
+    _ <- parseClosingTag tagName
     pure (Tag (XmlTag tagName (filterEmpty tagContent) attrs))
 
 parseXml :: Parser TagValue

@@ -25,11 +25,11 @@ source-repository head
 
 library
   exposed-modules:
+      Json
       Lib
       Parse
       Types
       Xml
-      Json
   other-modules:
       Paths_mypandoc
   autogen-modules:
