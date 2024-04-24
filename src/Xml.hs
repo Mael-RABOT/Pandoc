@@ -5,7 +5,7 @@
 -- Xml.hs
 -}
 
-module Xml (parseXml) where
+module Xml (parseXml, XmlTag(..), TagValue(..)) where
 
 import Data.Char (isAlphaNum, isSpace)
 import Control.Applicative
