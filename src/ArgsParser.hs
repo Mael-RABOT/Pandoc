@@ -27,14 +27,14 @@ defaultArgs = Args {
 
 parseArgs' :: [String] -> Args -> Args
 parseArgs' [] args = args
-parseArgs' ("-i":inputFile:rest) args =
-  parseArgs' rest (args {inputFile = Just inputFile})
-parseArgs' ("-f":outputFormat:rest) args =
-  parseArgs' rest (args {outputFormat = Just outputFormat})
-parseArgs' ("-o":outputFile:rest) args =
-  parseArgs' rest (args {outputFile = Just outputFile})
-parseArgs' ("-e":inputFormat:rest) args =
-  parseArgs' rest (args {inputFormat = Just inputFormat})
+parseArgs' ("-i":inputFileStr:rest) args =
+  parseArgs' rest (args {inputFile = Just inputFileStr})
+parseArgs' ("-f":outputFormatStr:rest) args =
+  parseArgs' rest (args {outputFormat = Just outputFormatStr})
+parseArgs' ("-o":outputFileStr:rest) args =
+  parseArgs' rest (args {outputFile = Just outputFileStr})
+parseArgs' ("-e":inputFormatStr:rest) args =
+  parseArgs' rest (args {inputFormat = Just inputFormatStr})
 parseArgs' _ _ = defaultArgs
 
 checkArgs :: Args -> Either String Args
@@ -51,5 +51,4 @@ parseArgs :: [String] -> Either String Args
 parseArgs args = do
     let parsedArgs = parseArgs' args defaultArgs
     checkedArgs <- checkArgs parsedArgs
-    checkedFormat <- checkFormat checkedArgs
-    return checkedFormat
+    checkFormat checkedArgs

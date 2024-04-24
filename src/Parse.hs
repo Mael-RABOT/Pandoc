@@ -90,7 +90,7 @@ sepByChar p delim = parseSpaces >> collectValues <|> pure []
   where
     collectValues = do
         first <- p
-        parseSpaces
+        _ <- parseSpaces
         rest <- parseMany (parseChar delim *> parseSpaces *> p)
         return (first : rest)
 

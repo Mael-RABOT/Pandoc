@@ -5,7 +5,7 @@
 -- Main.hs
 -}
 
-module Main where
+module Main ( main ) where
 
 import System.Environment (getArgs)
 import System.Exit (exitWith, ExitCode(..))
@@ -14,7 +14,7 @@ import Data.Maybe (fromJust)
 import Json (parseJson)
 import Xml (parseXml)
 import Parse (Parser(..))
-import ArgsParser (parseArgs, Args(..))
+import ArgsParser (Args(..), parseArgs)
 
 run :: Args -> IO ()
 run args = do
