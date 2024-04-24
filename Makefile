@@ -7,11 +7,11 @@
 
 NAME		=	mypandoc
 
-BINARY_PATH	:=	$(shell stack path --local-install-root)
+BINARY_PATH	=	`stack path --local-install-root`/bin
 
 all:
-	stack build
-	cp $(BINARY_PATH)/bin/$(NAME)-exe ./$(NAME)
+	stack build --allow-different-user
+	cp $(BINARY_PATH)/$(NAME)-exe ./$(NAME)
 
 clean:
 	stack clean
@@ -21,5 +21,5 @@ fclean: clean
 
 re: fclean all
 
-test:	all
-	stack test
+tests_run: all
+	stack test --allow-different-user --coverage
