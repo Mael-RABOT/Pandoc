@@ -32,6 +32,9 @@ library
       Json
       Markdown
       ArgsParser
+      JsonToUniversal
+      PrintUniversalContent
+      DebugJson
   other-modules:
       Paths_mypandoc
   autogen-modules:
