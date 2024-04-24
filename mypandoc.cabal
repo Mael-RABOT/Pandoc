@@ -26,19 +26,15 @@ source-repository head
 library
   exposed-modules:
       ArgsParser
-      DebugJson
       Formatter
       Json
-      JsonToUniversal
       Lib
-      Markdown
       Parse
       PrintUniversalContent
       Types
       Xml
       Markdown
       JsonToUniversal
-      PrintUniversalContent
       DebugJson
       XmlToUniversalContent
   other-modules:
