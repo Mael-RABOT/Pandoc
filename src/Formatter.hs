@@ -5,7 +5,7 @@
 -- Formatter.hs
 -}
 
-module Formatter ( Formatter(..) ) where
+module Formatter ( Formatter(..), runFormatter ) where
 
 import Types ( UniversalContent(..), Header, Item )
 

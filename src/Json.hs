@@ -9,7 +9,8 @@
 
 module Json (
         parseJson,
-        JsonValue(..)) where
+        JsonValue(..),
+        formatJson) where
 
 import Parse (
         Parser(..),
@@ -20,7 +21,11 @@ import Parse (
         sepByChar
     )
 
+import Formatter ( Formatter(..) )
+import Types
+
 import Control.Applicative ( Alternative((<|>)) )
+import Data.List (intercalate)
 
 data JsonValue
     = JsonNull
@@ -91,3 +96,69 @@ parseJsonObject = do
 
 parseJson :: Parser JsonValue
 parseJson = parseJsonValue
+
+
+-- PRINTER JSON
+
+formatJson :: Formatter
+formatJson = Formatter
+    { begin = "{\n"
+    , onHeader = onHeaderJson
+    , onBody = onBodyJson
+    , end = (++ "\n}")}
+
+onHeaderJson :: String -> Header -> String
+onHeaderJson s h = s ++ "\"header\": {\n"
+    ++ "\"title\": \"" ++ title h ++ "\""
+    ++ maybe "" (\a -> ",\n\"author\": \"" ++ a ++ "\"" ) (author h)
+    ++ maybe "" (\d -> ",\n\"date\": \"" ++ d ++ "\"" ) (date h)
+    ++ "\n},\n"
+
+onBodyJson :: String -> [Item] -> String
+onBodyJson s items = s ++ "\"body\": [\n"  ++ forEachItem items ++ "\n]"
+
+forEachItem :: [Item] -> String
+forEachItem items = intercalate ",\n" (map toItemValue items)
+
+toItemValue :: Item -> String
+toItemValue item = case item of
+        ParagraphItem para      -> paragraphToJson para
+        ListItem list           -> listToJson list
+        SectionItem sect        -> sectionToJson sect
+        CodeBlockItem cblock    -> codeblockToJson cblock
+        LinksItem links         -> linksToJson links
+
+paragraphToJson :: Paragraph -> String
+paragraphToJson para = case para of
+    Content cont -> "[\n" ++ forEachItem cont ++ "\n]"
+    Text txt     -> case txt of
+        Normal str  -> "\"" ++ str ++ "\""
+        Italic str  -> "{\n\"italic\": \"" ++ str ++ "\"\n}"
+        Bold str    -> "{\n\"bold\": \"" ++ str ++ "\"\n}"
+        Code str    -> "{\n\"code\": \"" ++ str ++ "\"\n}"
+
+listToJson :: [Item] -> String
+listToJson list = "{\n\"list\": [\n"
+    ++ forEachItem list
+    ++ "\n]\n}"
+
+sectionToJson :: Section -> String
+sectionToJson sect = "{\n\"section\": {\n"
+    ++ maybe "" (\t -> "\"title\": \"" ++ t ++ "\",\n" ) (name sect)
+    ++ "\"content\": [\n"
+    ++ forEachItem (content sect)
+    ++ "\n]\n}\n}"
+
+linksToJson :: Links -> String
+linksToJson links = case links of
+    Link url cont   -> "{\n\"link\":{\n\"url\":\"" ++ url
+        ++ "\",\n\"content\": [\n\"" ++ cont
+        ++ "\"\n]\n}\n}"
+    Image url alt   -> "{\n\"image\":{\n\"url\":\"" ++ url
+        ++ "\",\n\"alt\": [\n\"" ++ alt
+        ++ "\"\n]\n}\n}"
+
+codeblockToJson :: String -> String
+codeblockToJson cblock = "{\n\"codeblock\": [\n[\n"
+    ++ cblock
+    ++ "\n]\n]\n}"
