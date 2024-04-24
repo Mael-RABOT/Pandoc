@@ -86,14 +86,13 @@ parseSpaces = Parser $ \input ->
     in Right ("", keep)
 
 sepByChar :: Parser a -> Char -> Parser [a]
-sepByChar p delim = do
-    parseSpaces
-    let collectValues = do
-            first <- p
-            parseSpaces
-            rest <- parseMany (parseChar delim *> parseSpaces *> p)
-            return (first : rest)
-    collectValues <|> pure []
+sepByChar p delim = parseSpaces >> collectValues <|> pure []
+  where
+    collectValues = do
+        first <- p
+        parseSpaces
+        rest <- parseMany (parseChar delim *> parseSpaces *> p)
+        return (first : rest)
 
 parseString :: Parser String
 parseString = Parser $ \input ->

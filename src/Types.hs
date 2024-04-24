@@ -5,7 +5,15 @@
 -- Types.hs
 -}
 
-module Types ( UniversalContent, Header, Item ) where
+module Types ( UniversalContent(..)
+    , Header(..)
+    , Links(..)
+    , Text(..)
+    , Paragraph(..)
+    , Section(..)
+    , Item(..)
+    , Optional(..)
+    ) where
 
 type Optional = Maybe
 
