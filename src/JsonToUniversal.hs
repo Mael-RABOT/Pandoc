@@ -59,18 +59,27 @@ getSectionItem (JsonObject dict) =
 getSectionContent :: [JsonValue] -> [Item]
 getSectionContent arr = mapMaybe getBodyItem arr
 
+toBold :: [JsonValue] -> Text
+toBold value = Bold (getStringValue $ head value)
+
+toItalic :: [JsonValue] -> Text
+toItalic value = Italic (getStringValue $ head value)
+
+toCode :: [JsonValue] -> Text
+toCode value = Code (getStringValue $ head value)
+
 getOtherItem :: JsonValue -> Maybe Item
 getOtherItem (JsonArray jsonArray) = Just $
   ParagraphItem $ Content $ mapMaybe getBodyItem jsonArray
 getOtherItem (JsonObject dict) =
-    let (keys, values) = unzip dict
+    let (keys, value) = unzip dict
     in case head keys of
-        "bold" -> Just $ ParagraphItem $ Text (Bold (getStringValue $ head values))
-        "italic" -> Just $ ParagraphItem $ Text (Italic (getStringValue $ head values))
-        "code" -> Just $ ParagraphItem $ Text (Code (getStringValue $ head values))
-        "codeblock" -> Just $ CodeBlockItem $ getStringValue $ head values
-        "link" -> getLinkItem values
-        "image" -> getImageItem values
+        "bold" -> Just $ ParagraphItem $ Text (toBold value)
+        "italic" -> Just $ ParagraphItem $ Text (toItalic value)
+        "code" -> Just $ ParagraphItem $ Text (toCode value)
+        "codeblock" -> Just $ CodeBlockItem $ getStringValue $ head value
+        "link" -> getLinkItem value
+        "image" -> getImageItem value
         _ -> Nothing
 getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
