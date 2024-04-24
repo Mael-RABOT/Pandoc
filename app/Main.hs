@@ -11,7 +11,7 @@ import System.Environment (getArgs)
 import System.Exit (exitWith, ExitCode(..))
 import Data.Maybe (fromJust)
 
-import Json (parseJson)
+import Json (parseJson, formatJson)
 import Xml (parseXml)
 import Markdown (parseMarkdown)
 import Parse (Parser(..))
@@ -20,6 +20,8 @@ import JsonToUniversal (jsonToUniversal)
 import XmlToUniversalContent (xmlToUniversalContent)
 import PrintUniversalContent (printUniversalContent)
 import DebugJson (printJson)
+import Prelude
+import Formatter
 
 run :: Args -> IO ()
 run args = do
@@ -28,7 +30,7 @@ run args = do
         Right (json, _) ->
             case jsonToUniversal json of
                 Right universalContent ->
-                  printUniversalContent universalContent
+                  putStrLn (runFormatter formatJson universalContent)
                 Left err -> putStrLn err
         Left err -> putStrLn err
 
