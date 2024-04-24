@@ -68,3 +68,20 @@ jobs:
       - name: Clear binary and objects.
         timeout-minutes: 2
         run: make fclean
+
+  run_tests:
+    needs: check_compilation
+    name: Running tests
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/thomas-pommier-epi/epitest-fast:haskell
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Transfer stack root cache to user.
+        run: cp -r /root/.stack ~
+      - name: Permissions bug workaround for stack.
+        run: chown -R $(id -un):$(id -gn) ~
+      - name: Execute tests
+        timeout-minutes: 10
+        run: make tests_run

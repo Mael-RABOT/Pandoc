@@ -20,3 +20,6 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+tests_run: all
+	stack test --allow-different-user --coverage

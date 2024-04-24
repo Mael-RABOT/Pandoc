@@ -5,7 +5,15 @@
 -- Types.hs
 -}
 
-module Types where
+module Types ( UniversalContent(..)
+    , Header(..)
+    , Links(..)
+    , Text(..)
+    , Paragraph(..)
+    , Section(..)
+    , Item(..)
+    , Optional(..)
+    ) where
 
 type Optional = Maybe
 
@@ -25,7 +33,13 @@ data Text =
     | Italic String
     | Bold String
     | Code String
-    deriving (Show, Eq)
+    deriving (Eq)
+
+instance Show Text where
+    show (Normal str) = "normal: " ++ str
+    show (Italic str) = "italic: " ++ str
+    show (Bold str) = "bold: " ++ str
+    show (Code str) = "code: " ++ str
 
 data Paragraph =
     Text String
