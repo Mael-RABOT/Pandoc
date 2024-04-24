@@ -6,6 +6,7 @@
 -}
 
 module XmlToUniversalContent (xmlToUniversalContent) where
+import Data.Maybe (catMaybes)
 
 import Xml (TagValue(..), XmlTag(..))
 import Types (Optional, Header(..), Item(..), Paragraph(..), UniversalContent(..), Section(..), Links(..), Text(..))
@@ -39,17 +40,33 @@ getHeader (Just tag) = case findByKey (attributes tag) "title" of
         (getTagText (findByName (dataContent tag) "author"))
         (getTagText (findByName (dataContent tag) "date"))
 
+
 parapraphToItem :: [TagValue] -> Paragraph
-parapraphToItem tv = Paragraph ()
+parapraphToItem [(XmlText txt)] = Content $ [ParagraphItem $ Text $ Normal txt]
+parapraphToItem v = Content $ catMaybes $ map f2 v
+
+f2 :: TagValue -> Maybe Item
+f2 (XmlText v) = Just $ ParagraphItem $ Text $ Normal v
+f2 (Tag v) = tagToItem v
 
 tagToItem :: XmlTag -> Maybe Item
-tagToItem (XmlTag "paragraph" content attrs) = Just $ parapraphToItem content
+tagToItem (XmlTag "paragraph" content attrs) = Just $ ParagraphItem $ parapraphToItem content
+tagToItem (XmlTag "section" content attrs) = Just $ SectionItem $ Section (findByKey attrs "title") (catMaybes $ map f2 content)
+tagToItem (XmlTag "list" content attrs) = Just $ ListItem $ catMaybes $ map f2 content
+tagToItem (XmlTag "codeblock" content attrs) = Just $ CodeBlockItem $ extractString $ head content
+tagToItem (XmlTag "bold" content attrs) = Just $ ParagraphItem $ Text $ Bold $ extractString $ head content
+tagToItem (XmlTag "italic" content attrs) = Just $ ParagraphItem $ Text $ Italic $ extractString $ head content
+tagToItem (XmlTag "code" content attrs) = Just $ ParagraphItem $ Text $ Code $ extractString $ head content
 tagToItem _ = Nothing
 
+extractString :: TagValue -> String
+extractString (XmlText txt) = txt
+extractString _ = ""
+
 tagValueToItem :: TagValue -> Either String Item
-tagValueToItem (XmlText txt) = Right $ ParagraphItem (Text txt)
+tagValueToItem (XmlText txt) = Right $ ParagraphItem $ Text $ Normal txt
 tagValueToItem (Tag tag) = case tagToItem tag of
-    Nothing -> Left "Unknow tag with name: " ++ $ dataTitle tag
+    Nothing -> Left $ "Unknow tag with name: " ++ (dataTitle tag)
     (Just item) -> Right item
 
 getBody :: Maybe XmlTag -> Either String [Item]
@@ -72,5 +89,5 @@ processList :: [Either String a] -> Either String [a]
 processList eithers =
     let (lefts, rights) = partitionEithers eithers
     in if null lefts
-       then Right rights  -- Aucune erreur, retourne la liste des valeurs
+       then Right rights
        else Left (head lefts)
