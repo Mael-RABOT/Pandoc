@@ -5,7 +5,9 @@
 -- Json.hs
 -}
 
-module Json (parseJson, JsonValue(..)) where
+module Json (
+        parseJson,
+        JsonValue(..)) where
 
 import Parse (
         Parser(..),

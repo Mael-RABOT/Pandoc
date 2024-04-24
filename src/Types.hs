@@ -25,7 +25,13 @@ data Text =
     | Italic String
     | Bold String
     | Code String
-    deriving (Show, Eq)
+    deriving (Eq)
+
+instance Show Text where
+    show (Normal str) = "normal: " ++ str
+    show (Italic str) = "italic: " ++ str
+    show (Bold str) = "bold: " ++ str
+    show (Code str) = "code: " ++ str
 
 data Paragraph =
     Text String

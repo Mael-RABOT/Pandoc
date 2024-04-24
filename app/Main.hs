@@ -16,14 +16,20 @@ import Xml (parseXml)
 import Markdown (parseMarkdown)
 import Parse (Parser(..))
 import ArgsParser (parseArgs, Args(..))
+import JsonToUniversal (jsonToUniversal)
+import PrintUniversalContent (printUniversalContent)
+import DebugJson (printJson)
 
 run :: Args -> IO ()
 run args = do
     content <- readFile (fromJust $ inputFile args)
-    case inputFormat args of
-        Just "json" -> print . runParser parseJson $ content
-        Just "xml" -> print . runParser parseXml $ content
-        _ -> putStrLn "Invalid input format"
+    case runParser parseJson content of
+        Right (json, _) ->
+            case jsonToUniversal json of
+                Right universalContent ->
+                  printUniversalContent universalContent
+                Left err -> putStrLn err
+        Left err -> putStrLn err
 
 main :: IO ()
 main = do
