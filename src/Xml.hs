@@ -8,7 +8,7 @@
 {-# HLINT ignore "Use $>" #-}
 {-# HLINT ignore "Use <&>" #-}
 
-module Xml (parseXml) where
+module Xml (parseXml, XmlTag(..), TagValue(..)) where
 
 import Data.Char (isAlphaNum, isSpace)
 import Control.Applicative
@@ -20,7 +20,6 @@ import Parse (
         parseSome,
         parseSatisfy
     )
-
 
 data XmlTag = XmlTag {
     name :: String,

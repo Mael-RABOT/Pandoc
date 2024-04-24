@@ -13,6 +13,7 @@ import Data.Maybe (fromJust)
 
 import Json (parseJson)
 import Xml (parseXml)
+import Markdown (parseMarkdown)
 import Parse (Parser(..))
 import ArgsParser (Args(..), parseArgs)
 

@@ -32,6 +32,9 @@ library
       Parse
       Types
       Xml
+      Json
+      Markdown
+      ArgsParser
   other-modules:
       Paths_mypandoc
   autogen-modules:
@@ -65,9 +68,10 @@ test-suite mypandoc-test
   autogen-modules:
       Paths_mypandoc
   hs-source-dirs:
-      test
+      tests
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
     , mypandoc
+    , HUnit
   default-language: Haskell2010
