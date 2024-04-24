@@ -42,7 +42,7 @@ instance Show Text where
     show (Code str) = "code: " ++ str
 
 data Paragraph =
-    Text String
+    Text Text
     | Content [Item]
     deriving (Show, Eq)
 

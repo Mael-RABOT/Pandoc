@@ -65,14 +65,14 @@ getOtherItem (JsonArray jsonArray) = Just $
 getOtherItem (JsonObject dict) =
     let (keys, values) = unzip dict
     in case head keys of
-        "bold" -> Just $ ParagraphItem $ Text (getStringValue $ head values)
-        "italic" -> Just $ ParagraphItem $ Text (getStringValue $ head values)
-        "code" -> Just $ ParagraphItem $ Text (getStringValue $ head values)
+        "bold" -> Just $ ParagraphItem $ Text (Bold (getStringValue $ head values))
+        "italic" -> Just $ ParagraphItem $ Text (Italic (getStringValue $ head values))
+        "code" -> Just $ ParagraphItem $ Text (Code (getStringValue $ head values))
         "codeblock" -> Just $ CodeBlockItem $ getStringValue $ head values
         "link" -> getLinkItem values
         "image" -> getImageItem values
         _ -> Nothing
-getOtherItem (JsonString str) = Just $ ParagraphItem $ Text str
+getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
 
 getLinkItem :: [JsonValue] -> Maybe Item
