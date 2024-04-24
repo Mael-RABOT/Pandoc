@@ -5,7 +5,7 @@
 -- Types.hs
 -}
 
-module Types where
+module Types ( UniversalContent, Header, Item ) where
 
 type Optional = Maybe
 

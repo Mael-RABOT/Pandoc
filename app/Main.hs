@@ -5,7 +5,7 @@
 -- Main.hs
 -}
 
-module Main where
+module Main ( main ) where
 
 import System.Environment (getArgs)
 import System.Exit (exitWith, ExitCode(..))

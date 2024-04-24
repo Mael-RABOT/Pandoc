@@ -4,6 +4,8 @@
 -- File description:
 -- Json.hs
 -}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use lambda-case" #-}
 
 module Json (
         parseJson,
@@ -18,9 +20,7 @@ import Parse (
         sepByChar
     )
 
-import Control.Applicative
-
-type JsonItem = (String, JsonValue)
+import Control.Applicative ( Alternative((<|>)) )
 
 data JsonValue
     = JsonNull
@@ -43,20 +43,20 @@ parseJsonValue =
 parseJsonNull :: Parser JsonValue
 parseJsonNull = Parser $ \input ->
     case input of
-        "null" -> Right (JsonNull, "")
-        _ -> Left "Expected 'null'"
+        "null"  -> Right (JsonNull, "")
+        _       -> Left "Expected 'null'"
 
 parseJsonBool :: Parser JsonValue
 parseJsonBool = Parser $ \input ->
     case input of
-        "true" -> Right (JsonBool True, "")
+        "true"  -> Right (JsonBool True, "")
         "false" -> Right (JsonBool False, "")
-        _ -> Left "Expected 'true' or 'false'"
+        _       -> Left "Expected 'true' or 'false'"
 
 parseJsonNumber :: Parser JsonValue
 parseJsonNumber = Parser $ \input ->
     case runParser parseInt input of
-        Right (res, rem) -> Right (JsonNumber res, rem)
+        Right (res, remain) -> Right (JsonNumber res, remain)
         Left err -> Left err
 
 parseJsonString :: Parser JsonValue
@@ -64,28 +64,28 @@ parseJsonString = fmap JsonString parseString
 
 parseJsonArray :: Parser JsonValue
 parseJsonArray = do
-    parseChar '['
-    parseSpaces
+    _ <- parseChar '['
+    _ <- parseSpaces
     values <- parseJsonValue `sepByChar` ','
-    parseSpaces
-    parseChar ']'
+    _ <- parseSpaces
+    _ <- parseChar ']'
     return (JsonArray values)
 
 parseJsonDict :: Parser JsonValue
 parseJsonDict = do
-    parseChar '{'
-    parseSpaces
+    _ <- parseChar '{'
+    _ <- parseSpaces
     pairs <- parseJsonObject `sepByChar` ','
-    parseSpaces
-    parseChar '}'
+    _ <- parseSpaces
+    _ <- parseChar '}'
     return (JsonObject pairs)
 
 parseJsonObject :: Parser (String, JsonValue)
 parseJsonObject = do
     key <- parseString
-    parseSpaces
+    _ <- parseSpaces
     _ <- parseChar ':'
-    parseSpaces
+    _ <- parseSpaces
     value <- parseJsonValue
     return (key, value)
 

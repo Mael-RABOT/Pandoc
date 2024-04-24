@@ -4,35 +4,37 @@
 -- File description:
 -- Parse.hs
 -}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use lambda-case" #-}
 
 module Parse (parseChar, parseInt, parseMany, parseSome,
     parseSpaces, sepByChar, parseString, Parser(..), parseSatisfy) where
 
-import Control.Applicative
+import Control.Applicative ( Alternative((<|>), empty) )
 import Text.Read (readMaybe)
 import Data.Char (isSpace)
 
-data Parser a = Parser {
+newtype Parser a = Parser {
     runParser :: String -> Either String (a, String)
 }
 
 instance Functor Parser where
     fmap fct parser = Parser $ \ input ->
         case runParser parser input of
-            Right (res, rem) -> Right (fct res, rem)
+            Right (res, remain) -> Right (fct res, remain)
             Left err -> Left err
 
 instance Applicative Parser where
     pure x = Parser $ \ input -> Right (x, input)
     (Parser p1) <*> (Parser p2) = Parser $ \input ->
         case p1 input of
-            Right (f, rem) -> case p2 rem of
-                Right (res, rem2) -> Right (f res, rem2)
+            Right (f, remain) -> case p2 remain of
+                Right (res, remain2) -> Right (f res, remain2)
                 Left err -> Left err
             Left err -> Left err
 
 instance Alternative Parser where
-    empty = Parser $ \ input -> Left "Empty"
+    empty = Parser $ const $ Left "Empty"
     (Parser p1) <|> (Parser p2) = Parser $ \input ->
         case p1 input of
             Right res -> Right res
@@ -84,19 +86,20 @@ parseSpaces = Parser $ \input ->
     in Right ("", keep)
 
 sepByChar :: Parser a -> Char -> Parser [a]
-sepByChar p delim = parseSpaces >> collectValues <|> pure []
-  where
-    collectValues = do
-        first <- p
-        parseSpaces
-        rest <- parseMany (parseChar delim *> parseSpaces *> p)
-        return (first : rest)
+sepByChar p delim = do
+    parseSpaces
+    let collectValues = do
+            first <- p
+            parseSpaces
+            rest <- parseMany (parseChar delim *> parseSpaces *> p)
+            return (first : rest)
+    collectValues <|> pure []
 
 parseString :: Parser String
 parseString = Parser $ \input ->
     case input of
         ('"':rest) -> case span (/= '"') rest of
-            (str, ('"':xs)) -> Right (str, xs)
+            (str, '"':xs) -> Right (str, xs)
             _ -> Left "Unterminated string"
         _ -> Left "Expected string"
 
