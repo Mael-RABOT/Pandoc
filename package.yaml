@@ -52,7 +52,9 @@ executables:
 tests:
   mypandoc-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:
+    - src
+    - tests
     ghc-options:
     - -threaded
     - -rtsopts
