@@ -36,6 +36,7 @@ library
       JsonToUniversal
       PrintUniversalContent
       DebugJson
+      XmlToUniversalContent
   other-modules:
       Paths_mypandoc
   autogen-modules:
