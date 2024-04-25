@@ -9,16 +9,21 @@ module PrintUniversalContent where
 
 import Text.Printf (printf)
 
-import Types (Optional, Header(..), Item(..), Paragraph(..), UniversalContent(..), Section(..), Links(..), Text(..))
+import Types ( Header(..)
+    , Item(..)
+    , Paragraph(..)
+    , UniversalContent(..)
+    , Section(..)
+    , Links(..) )
 
 printHeader :: Header -> IO ()
-printHeader (Header title author date) =
-    putStrLn ("Title: " ++ title) >>
-    putStrLn ("Author: " ++ maybe "N/A" id author) >>
-    putStrLn ("Date: " ++ maybe "N/A" id date)
+printHeader (Header t a d) =
+    putStrLn ("Title: " ++ t) >>
+    putStrLn ("Author: " ++ maybe "N/A" id a) >>
+    putStrLn ("Date: " ++ maybe "N/A" id d)
 
 printLinks :: Links -> IO ()
-printLinks (Link url content) = printf "Link: %s, Content: %s\n" url content
+printLinks (Link url cont) = printf "Link: %s, Content: %s\n" url cont
 printLinks (Image url alt) = printf "Image: %s, Alt: %s\n" url alt
 
 printParagraph :: Paragraph -> IO ()
@@ -38,8 +43,8 @@ printItem (CodeBlockItem str) = putStrLn str
 printItem (LinksItem links) = printLinks links
 
 printUniversalContent :: UniversalContent -> IO ()
-printUniversalContent (UniversalContent header body) =
+printUniversalContent (UniversalContent h b) =
     putStrLn "Header:" >>
-    printHeader header >>
+    printHeader h >>
     putStrLn "Body:" >>
-    mapM_ printItem body
+    mapM_ printItem b

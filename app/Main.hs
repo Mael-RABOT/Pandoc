@@ -11,14 +11,24 @@ import System.Environment (getArgs)
 import System.Exit (exitWith, ExitCode(..))
 import Data.Maybe (fromJust)
 
-import Json (parseJson)
+import Json (parseJson, formatJson)
 import Xml (parseXml)
-import Markdown (parseMarkdown)
 import Parse (Parser(..))
+import Markdown ( formatMarkdown )
 import ArgsParser (parseArgs, Args(..))
-import JsonToUniversal (jsonToUniversal)
-import PrintUniversalContent (printUniversalContent)
-import DebugJson (printJson)
+import JsonToUniversal ( jsonToUniversal )
+import PrintUniversalContent ( printUniversalContent )
+import DebugJson ( printJson )
+import XmlToUniversalContent ( xmlToUniversalContent )
+import Prelude
+import Formatter ( Formatter, runFormatter )
+
+getFormatter :: Args -> Formatter
+getFormatter (Args _ _ _ (Just format)) = case format of
+        "json"      -> formatJson
+        "markdown"  -> formatMarkdown
+        _           -> formatMarkdown
+getFormatter _ = formatMarkdown
 
 run :: Args -> IO ()
 run args = do
@@ -27,13 +37,17 @@ run args = do
         Right (json, _) ->
             case jsonToUniversal json of
                 Right universalContent ->
-                  printUniversalContent universalContent
+                  putStr (runFormatter (getFormatter args)
+                    universalContent)
                 Left err -> putStrLn err
         Left err -> putStrLn err
 
 main :: IO ()
-main = do
-    args <- getArgs
-    case parseArgs args of
-        Right args -> run args
-        Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
+main = readFile "tests/example.xml" >>= \ c -> case (runParser parseXml c) of
+    Left err -> print err
+    Right (v, _) -> print $ xmlToUniversalContent v
+-- main = do
+--     args <- getArgs
+--     case parseArgs args of
+--         Right args -> run args
+--         Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)

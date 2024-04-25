@@ -5,14 +5,21 @@
 -- Formatter.hs
 -}
 
-module Formatter ( Formatter(..) ) where
+module Formatter ( Formatter(..), runFormatter ) where
 
-import Types ( UniversalContent, Header, Item )
+import Types ( UniversalContent(..), Header, Item )
 
 data Formatter = Formatter {
+    begin :: String,
     onHeader :: String -> Header -> String,
     onBody :: String -> [Item] -> String,
-    begin :: String,
     end :: String -> String
 }
 
+runFormatter :: Formatter -> UniversalContent -> String
+runFormatter (Formatter begin onHeader onBody end)
+    (UniversalContent header body) =
+        let headerResult = onHeader begin header
+            bodyResult = onBody headerResult body
+            finalResult = end bodyResult
+        in finalResult
