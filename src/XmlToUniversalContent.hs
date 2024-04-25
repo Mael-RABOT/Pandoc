@@ -102,8 +102,9 @@ convertDocument v = case getHeader $ findByName v "header" of
         Left err -> Left $ "Document error: " ++ err
         Right b -> Right $ UniversalContent h b
 
-xmlToUniversalContent :: TagValue -> Either String UniversalContent
-xmlToUniversalContent (Tag tag) = case dataTitle tag of
+xmlToUniversalContent :: Either String TagValue -> Either String UniversalContent
+xmlToUniversalContent (Left err) = Left err
+xmlToUniversalContent (Right (Tag tag)) = case dataTitle tag of
     "document" -> convertDocument $ dataContent tag
     _ -> Left "Xml docmument must begin with <document> tag"
 xmlToUniversalContent _ = Left ""
