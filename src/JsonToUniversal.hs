@@ -78,12 +78,16 @@ getOtherItem (JsonObject dict) =
         "bold" -> Just $ ParagraphItem $ Text (toBold value)
         "italic" -> Just $ ParagraphItem $ Text (toItalic value)
         "code" -> Just $ ParagraphItem $ Text (toCode value)
-        "codeblock" -> Just $ CodeBlockItem $ getStringValue $ head value
+        "codeblock" -> getCodeBlockItem value
         "link" -> getLinkItem value
         "image" -> getImageItem value
         _ -> Nothing
 getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
+
+getCodeBlockItem :: [JsonValue] -> Maybe Item
+getCodeBlockItem jsonArray =
+    Just $ CodeBlockItem $ mapMaybe getBodyItem jsonArray
 
 getLinkItem :: [JsonValue] -> Maybe Item
 getLinkItem [JsonObject link] =
