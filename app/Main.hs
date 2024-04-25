@@ -12,7 +12,7 @@ import System.Exit (exitWith, ExitCode(..))
 import Data.Maybe (fromJust)
 
 import Json (parseJson, formatJson)
-import Xml (parseXml)
+import Xml (parseXml, formatXml)
 import Parse (Parser(..))
 import Markdown ( formatMarkdown )
 import ArgsParser (parseArgs, Args(..))
@@ -27,6 +27,7 @@ getFormatter :: Args -> Formatter
 getFormatter (Args _ _ _ (Just format)) = case format of
         "json"      -> formatJson
         "markdown"  -> formatMarkdown
+        "xml"  -> formatXml
         _           -> formatMarkdown
 getFormatter _ = formatMarkdown
 
