@@ -50,13 +50,19 @@ f2 (XmlText v) = Just $ ParagraphItem $ Text $ Normal v
 f2 (Tag v) = tagToItem v
 
 tagToItem :: XmlTag -> Maybe Item
-tagToItem (XmlTag "paragraph" content attrs) = Just $ ParagraphItem $ parapraphToItem content
-tagToItem (XmlTag "section" content attrs) = Just $ SectionItem $ Section (findByKey attrs "title") (catMaybes $ map f2 content)
-tagToItem (XmlTag "list" content attrs) = Just $ ListItem $ catMaybes $ map f2 content
-tagToItem (XmlTag "codeblock" content attrs) = Just $ CodeBlockItem $ extractString $ head content
-tagToItem (XmlTag "bold" content attrs) = Just $ ParagraphItem $ Text $ Bold $ extractString $ head content
-tagToItem (XmlTag "italic" content attrs) = Just $ ParagraphItem $ Text $ Italic $ extractString $ head content
-tagToItem (XmlTag "code" content attrs) = Just $ ParagraphItem $ Text $ Code $ extractString $ head content
+tagToItem (XmlTag "paragraph" cont _) = Just $ ParagraphItem $ parapraphToItem
+    cont
+tagToItem (XmlTag "section" cont attrs) = Just $ SectionItem $ Section
+    (findByKey attrs "title") (catMaybes $ map f2 cont)
+tagToItem (XmlTag "list" cont _) = Just $ ListItem $ catMaybes $ map f2 cont
+tagToItem (XmlTag "codeblock" cont _) = Just $ CodeBlockItem $ extractString $
+    head cont
+tagToItem (XmlTag "bold" cont _) = Just $ ParagraphItem $ Text $ Bold $
+    extractString $ head cont
+tagToItem (XmlTag "italic" cont _) = Just $ ParagraphItem $ Text $ Italic $
+    extractString $ head cont
+tagToItem (XmlTag "code" cont _) = Just $ ParagraphItem $ Text $ Code $
+    extractString $ head cont
 tagToItem _ = Nothing
 
 extractString :: TagValue -> String

@@ -23,6 +23,12 @@ import Parse (
 
 import Formatter ( Formatter(..) )
 import Types
+    ( Item(..),
+      Section(content, name),
+      Paragraph(..),
+      Text(Code, Normal, Italic, Bold),
+      Links(..),
+      Header(date, title, author) )
 
 import Control.Applicative ( Alternative((<|>)) )
 import Data.List (intercalate)
