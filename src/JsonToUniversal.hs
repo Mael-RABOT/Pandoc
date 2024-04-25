@@ -12,8 +12,9 @@ import Data.Maybe (fromMaybe, mapMaybe)
 import Json (parseJson, JsonValue(..))
 import Types (Optional, Header(..), Item(..), Paragraph(..), UniversalContent(..), Section(..), Links(..), Text(..))
 
-jsonToUniversal :: JsonValue -> Either String UniversalContent
-jsonToUniversal (JsonObject jsonObject) =
+jsonToUniversal :: Either String JsonValue -> Either String UniversalContent
+jsonToUniversal (Left err) = Left err
+jsonToUniversal (Right (JsonObject jsonObject)) =
     case lookup "header" jsonObject of
         Just (JsonObject header) ->
             case lookup "body" jsonObject of
@@ -21,7 +22,7 @@ jsonToUniversal (JsonObject jsonObject) =
                   (getHeader header) (fromMaybe [] $ getBody body)
                 Nothing -> Left "No body found"
         Nothing -> Left "No header found"
-jsonToUniversal _ = Left "Invalid JSON"
+jsonToUniversal _m = Left "Invalid JSON"
 
 getHeader :: [(String, JsonValue)] -> Header
 getHeader jsonObject =

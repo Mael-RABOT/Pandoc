@@ -8,8 +8,9 @@
 {-# HLINT ignore "Use $>" #-}
 {-# HLINT ignore "Use <&>" #-}
 
-module Xml (parseXml, XmlTag(..), TagValue(..)) where
+module Xml (parseXml, XmlTag(..), TagValue(..), formatXml ) where
 
+import Formatter ( Formatter(..) )
 import Data.Char (isAlphaNum, isSpace)
 import Control.Applicative
 import Parse (
@@ -20,6 +21,13 @@ import Parse (
         parseSome,
         parseSatisfy
     )
+import Types
+    ( Item(..),
+      Section(content, name),
+      Paragraph(..),
+      Text(Code, Normal, Italic, Bold),
+      Links(..),
+      Header(date, title, author) )
 
 data XmlTag = XmlTag {
     dataTitle :: String,
@@ -85,3 +93,65 @@ parseTag = do
 
 parseXml :: Parser TagValue
 parseXml = parseTag
+
+-- PRINTER XML
+
+formatXml :: Formatter
+formatXml = Formatter
+    { begin = "<document>\n"
+    , onHeader = onHeadetXml
+    , onBody = onBodtXml
+    , end = (++ "</document>")}
+
+onHeadetXml :: String -> Header -> String
+onHeadetXml s h = s ++ "<header title=\"" ++ title h ++ "\">\n"
+    ++ maybe "" (\a -> "<author>" ++ a ++ "</author>\n" ) (author h)
+    ++ maybe "" (\d -> "<date>" ++ d ++ "</date>\n" ) (date h)
+    ++ "</header>\n"
+
+onBodtXml :: String -> [Item] -> String
+onBodtXml s items = s ++ "<body>\n"  ++ forEachItem items ++ "</body>\n"
+
+forEachItem :: [Item] -> String
+forEachItem = concatMap toItemValue
+
+toItemValue :: Item -> String
+toItemValue item = case item of
+        ParagraphItem para      -> paragraphToXml para
+        ListItem list           -> listToXml list
+        SectionItem sect        -> sectionToXml sect
+        CodeBlockItem cblock    -> codeblockToXml cblock
+        LinksItem links         -> linksToXml links
+
+paragraphToXml :: Paragraph -> String
+paragraphToXml para = case para of
+    Content cont -> "<paragraph>" ++ forEachItem cont ++ "</paragraph>\n"
+    Text txt     -> case txt of
+        Normal str  -> str
+        Italic str  -> "<italic>" ++ str ++ "</italic>"
+        Bold str    -> "<bold>" ++ str ++ "</bold>"
+        Code str    -> "<code>" ++ str ++ "</code>"
+
+listToXml :: [Item] -> String
+listToXml list = "<list>"
+    ++ forEachItem list
+    ++ "</list>\n"
+
+sectionToXml :: Section -> String
+sectionToXml sect = "<section title=\"" ++ maybe "" id (name sect) ++ "\">\n"
+    ++ forEachItem (content sect)
+    ++ "</section>\n"
+
+linksToXml :: Links -> String
+linksToXml links = case links of
+    Link url cont   -> "<link url=\"" ++ url ++ "\">"
+        ++ cont
+        ++ "</link>"
+    Image url alt   -> "<image url=\"" ++ url ++ "\">"
+        ++ alt
+        ++ "</image>"
+
+codeblockToXml :: String -> String
+codeblockToXml cblock = "<codeblock>\n"
+    ++ cblock
+    ++ "</codeblock>\n"
