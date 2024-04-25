@@ -13,14 +13,21 @@ import Data.Maybe (fromJust)
 
 import Json (parseJson, formatJson)
 import Xml (parseXml)
-import Markdown (formatMarkdown)
 import Parse (Parser(..))
+import Markdown ( formatMarkdown )
 import ArgsParser (parseArgs, Args(..))
-import JsonToUniversal (jsonToUniversal)
-import PrintUniversalContent (printUniversalContent)
-import DebugJson (printJson)
+import JsonToUniversal ( jsonToUniversal )
+import PrintUniversalContent ( printUniversalContent )
+import DebugJson ( printJson )
 import Prelude
-import Formatter
+import Formatter ( Formatter, runFormatter )
+
+getFormatter :: Args -> Formatter
+getFormatter (Args _ _ _ (Just format)) = case format of
+        "json"      -> formatJson
+        "markdown"  -> formatMarkdown
+        _           -> formatMarkdown
+getFormatter _ = formatMarkdown
 
 run :: Args -> IO ()
 run args = do
@@ -29,7 +36,8 @@ run args = do
         Right (json, _) ->
             case jsonToUniversal json of
                 Right universalContent ->
-                  putStr (runFormatter formatMarkdown universalContent)
+                  putStr (runFormatter (getFormatter args)
+                    universalContent)
                 Left err -> putStrLn err
         Left err -> putStrLn err
 
