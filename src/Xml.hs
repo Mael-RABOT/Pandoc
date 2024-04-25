@@ -133,7 +133,7 @@ paragraphToXml para = case para of
         Code str    -> "<code>" ++ str ++ "</code>"
 
 listToXml :: [Item] -> String
-listToXml list = "<list>"
+listToXml list = "<list>\n"
     ++ forEachItem list
     ++ "</list>\n"
 
