@@ -22,14 +22,14 @@ import Parse (
     )
 
 data XmlTag = XmlTag {
-    name :: String,
-    content :: [TagValue],
+    dataTitle :: String,
+    dataContent :: [TagValue],
     attributes :: [(String, String)]
 } deriving (Show, Eq)
 
 data TagValue =
     Tag XmlTag
-    | Text String
+    | XmlText String
     deriving (Show, Eq)
 
 parseTagName :: Parser String
@@ -46,12 +46,12 @@ parseClosingTag tagName = do
     if closingTagName == tagName
         then
             parseChar '>' *>
-            pure (XmlTag closingTagName [Text ""] [])
+            pure (XmlTag closingTagName [XmlText ""] [])
         else
             Parser $ \_ -> Left "Mismatched closing XmlTag"
 
 parseTagText :: Parser TagValue
-parseTagText = parseSome (parseSatisfy (/= '<')) >>= (pure . Text)
+parseTagText = parseSome (parseSatisfy (/= '<')) >>= (pure . XmlText)
 
 
 parseTagValue :: Parser TagValue
@@ -71,7 +71,7 @@ filterEmpty = filter (not . isEmpty)
     where
         isEmpty :: TagValue -> Bool
         isEmpty (Tag _) = False
-        isEmpty (Text v) = all isSpace v
+        isEmpty (XmlText v) = all isSpace v
 
 parseTag :: Parser TagValue
 parseTag = do
