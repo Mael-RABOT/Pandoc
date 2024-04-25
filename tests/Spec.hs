@@ -14,11 +14,11 @@ tests = test [
     "Json - test6" ~: assertEqual "Testing parseJson with array" (Right ((JsonArray [JsonNumber 1, JsonNumber 2]), "")) (runParser parseJson "[1, 2]"),
     "Json - test7" ~: assertEqual "Testing parseJson with object" (Right ((JsonObject [("key", JsonString "value")]), "")) (runParser parseJson "{\"key\": \"value\"}"),
     "Xml - test1" ~: assertEqual "Testing parseXml with simple tag" (Right ((Tag (XmlTag "tag" [] [])), "")) (runParser parseXml "<tag></tag>"),
-    "Xml - test2" ~: assertEqual "Testing parseXml with tag having text" (Right ((Tag (XmlTag "tag" [Text "Hello"] [])), "")) (runParser parseXml "<tag>Hello</tag>"),
+    "Xml - test2" ~: assertEqual "Testing parseXml with tag having text" (Right ((Tag (XmlTag "tag" [XmlText "Hello"] [])), "")) (runParser parseXml "<tag>Hello</tag>"),
     "Xml - test3" ~: assertEqual "Testing parseXml with tag having attribute" (Right ((Tag (XmlTag "tag" [] [("attr", "value")])), "")) (runParser parseXml "<tag attr=\"value\"></tag>"),
     "Xml - test4" ~: assertEqual "Testing parseXml with tag having multiple attributes" (Right ((Tag (XmlTag "tag" [] [("attr1", "value1"), ("attr2", "value2")])), "")) (runParser parseXml "<tag attr1=\"value1\" attr2=\"value2\"></tag>"),
     "Xml - test5" ~: assertEqual "Testing parseXml with nested tags" (Right ((Tag (XmlTag "outer" [Tag (XmlTag "inner" [] [])] [])), "")) (runParser parseXml "<outer><inner></inner></outer>"),
-    "Xml - test6" ~: assertEqual "Testing parseXml with nested tags having text" (Right ((Tag (XmlTag "outer" [Tag (XmlTag "inner" [Text "Hello"] [])] [])), "")) (runParser parseXml "<outer><inner>Hello</inner></outer>")
+    "Xml - test6" ~: assertEqual "Testing parseXml with nested tags having text" (Right ((Tag (XmlTag "outer" [Tag (XmlTag "inner" [XmlText "Hello"] [])] [])), "")) (runParser parseXml "<outer><inner>Hello</inner></outer>")
   ]
 
 main :: IO ()

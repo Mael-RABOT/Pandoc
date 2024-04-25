@@ -36,10 +36,6 @@ library
       PrintUniversalContent
       Types
       Xml
-      Markdown
-      JsonToUniversal
-      PrintUniversalContent
-      DebugJson
       XmlToUniversalContent
   other-modules:
       Paths_mypandoc
@@ -81,6 +77,7 @@ test-suite mypandoc-test
       PrintUniversalContent
       Types
       Xml
+      XmlToUniversalContent
       Paths_mypandoc
   autogen-modules:
       Paths_mypandoc
