@@ -19,6 +19,7 @@ import ArgsParser (parseArgs, Args(..))
 import JsonToUniversal ( jsonToUniversal )
 import PrintUniversalContent ( printUniversalContent )
 import DebugJson ( printJson )
+import XmlToUniversalContent ( xmlToUniversalContent )
 import Prelude
 import Formatter ( Formatter, runFormatter )
 
@@ -42,8 +43,11 @@ run args = do
         Left err -> putStrLn err
 
 main :: IO ()
-main = do
-    args <- getArgs
-    case parseArgs args of
-        Right args -> run args
-        Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
+main = readFile "tests/example.xml" >>= \ c -> case (runParser parseXml c) of
+    Left err -> print err
+    Right (v, _) -> print $ xmlToUniversalContent v
+-- main = do
+--     args <- getArgs
+--     case parseArgs args of
+--         Right args -> run args
+--         Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
