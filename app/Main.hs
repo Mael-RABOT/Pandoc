@@ -43,11 +43,11 @@ run args = do
         Left err -> putStrLn err
 
 main :: IO ()
-main = readFile "tests/example.xml" >>= \ c -> case (runParser parseXml c) of
-    Left err -> print err
-    Right (v, _) -> print $ xmlToUniversalContent v
--- main = do
---     args <- getArgs
---     case parseArgs args of
---         Right args -> run args
---         Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
+main = do
+    args <- getArgs
+    case parseArgs args of
+        Right args -> run args
+        Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
+    -- readFile "tests/example.xml" >>= \ c -> case (runParser parseXml c) of
+    -- Left err -> print err
+    -- Right (v, _) -> print $ xmlToUniversalContent v
