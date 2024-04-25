@@ -51,7 +51,8 @@ run args = do
         Right v ->
             printWhere (outputFile args) (runFormatter (getFormatter args) v)
         Left _ -> case xmlEngine content of
-            Right v ->  printWhere (outputFile args) (runFormatter (getFormatter args) v)
+            Right v ->  printWhere (outputFile args)
+                (runFormatter (getFormatter args) v)
             _ -> putStr "err"
 
 
@@ -61,6 +62,3 @@ main = do
     case parseArgs args of
         Right a -> run a
         Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
-    -- readFile "tests/example.xml" >>= \ c -> case (runParser parseXml c) of
-    -- Left err -> print err
-    -- Right (v, _) -> print $ xmlToUniversalContent v
