@@ -40,15 +40,18 @@ xmlEngine str = case runParser parseXml str of
     Right (xml, _) -> xmlToUniversalContent $ Right xml
     Left err ->  Left err
 
+printWhere :: Maybe String -> String -> IO ()
+printWhere Nothing str = putStr str
+printWhere(Just fn) str = writeFile fn str
 
 run :: Args -> IO ()
 run args = do
     content <- readFile (fromJust $ inputFile args)
     case jsonEngine content of
         Right v ->
-            putStr (runFormatter (getFormatter args) v)
+            printWhere (outputFile args) (runFormatter (getFormatter args) v)
         Left _ -> case xmlEngine content of
-            Right v -> putStr (runFormatter (getFormatter args) v)
+            Right v ->  printWhere (outputFile args) (runFormatter (getFormatter args) v)
             _ -> putStr "err"
 
 
