@@ -13,7 +13,7 @@ import Data.Maybe (fromJust)
 
 import Json (parseJson, formatJson)
 import Xml (parseXml)
-import Markdown (parseMarkdown)
+import Markdown (formatMarkdown)
 import Parse (Parser(..))
 import ArgsParser (parseArgs, Args(..))
 import JsonToUniversal (jsonToUniversal)
@@ -29,7 +29,7 @@ run args = do
         Right (json, _) ->
             case jsonToUniversal json of
                 Right universalContent ->
-                  putStrLn (runFormatter formatJson universalContent)
+                  putStr (runFormatter formatMarkdown universalContent)
                 Left err -> putStrLn err
         Left err -> putStrLn err
 
