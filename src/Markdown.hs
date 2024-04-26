@@ -211,6 +211,6 @@ linksToMarkdown links = case links of
         ++ url ++ ")"
 
 codeblockToMarkdown :: [Item] -> Int -> String
-codeblockToMarkdown cblock indent = "\n```\n"
-    ++ forEachItem cblock indent
+codeblockToMarkdown cblock _ = "\n```\n"
+    ++ forEachItem cblock 0
     ++ "\n```\n"
