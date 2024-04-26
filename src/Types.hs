@@ -24,8 +24,8 @@ data Header = Header {
 } deriving (Show, Eq)
 
 data Links =
-  Link String String
-  | Image String String
+  Link String [Item]
+  | Image String [Item]
   deriving (Show, Eq)
 
 data Text =

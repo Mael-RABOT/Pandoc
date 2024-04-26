@@ -179,7 +179,7 @@ toItemValue item indent = case item of
         ParagraphItem para      -> paragraphToMarkdown para indent
         ListItem list           -> listToMarkdown list indent
         SectionItem sect        -> sectionToMarkdown sect (indent + 1)
-        CodeBlockItem cblock    -> codeblockToMarkdown cblock indent
+        CodeBlockItem cblock    -> codeblockToMarkdown cblock
         LinksItem links         -> linksToMarkdown links
 
 paragraphToMarkdown :: Paragraph -> Int -> String
@@ -205,12 +205,12 @@ sectionToMarkdown sect indent = case name sect of
 
 linksToMarkdown :: Links -> String
 linksToMarkdown links = case links of
-    Link url cont   -> "["++ cont ++ "]("
+    Link url cont   -> "["++ forEachItem cont 0 ++ "]("
         ++ url ++ ")"
-    Image url alt   -> "["++ alt ++ "]("
+    Image url alt   -> "["++ forEachItem alt 0 ++ "]("
         ++ url ++ ")"
 
-codeblockToMarkdown :: [Item] -> Int -> String
-codeblockToMarkdown cblock _ = "\n```\n"
+codeblockToMarkdown :: [Item] -> String
+codeblockToMarkdown cblock = "\n```\n"
     ++ forEachItem cblock 0
     ++ "\n```\n"
