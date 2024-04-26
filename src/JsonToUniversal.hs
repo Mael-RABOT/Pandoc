@@ -35,10 +35,6 @@ getString :: JsonValue -> Maybe String
 getString (JsonString s) = Just s
 getString _ = Nothing
 
-getArray :: JsonValue -> Maybe [JsonValue]
-getArray (JsonArray arr) = Just arr
-getArray _ = Nothing
-
 getBody :: JsonValue -> Maybe [Item]
 getBody (JsonArray jsonArray) = Just $ mapMaybe getBodyItem jsonArray
 
@@ -69,11 +65,13 @@ toItalic value = Italic (getStringValue $ head value)
 toCode :: [JsonValue] -> Text
 toCode value = Code (getStringValue $ head value)
 
+processJsonArray :: [JsonValue] -> Maybe Item
+processJsonArray jsonArray = Just $ ParagraphItem $
+  Content $ mapMaybe getBodyItem jsonArray
+
 getOtherItem :: JsonValue -> Maybe Item
-getOtherItem (JsonArray jsonArray) = Just $
-  ParagraphItem $ Content $ mapMaybe getBodyItem jsonArray
-getOtherItem (JsonObject dict) =
-    let (keys, value) = unzip dict
+getOtherItem (JsonArray jsonArray) = processJsonArray jsonArray
+getOtherItem (JsonObject dict) = let (keys, value) = unzip dict
     in case head keys of
         "bold" -> Just $ ParagraphItem $ Text (toBold value)
         "italic" -> Just $ ParagraphItem $ Text (toItalic value)
@@ -81,6 +79,7 @@ getOtherItem (JsonObject dict) =
         "codeblock" -> Just $ CodeBlockItem $ getStringValue $ head value
         "link" -> getLinkItem value
         "image" -> getImageItem value
+        "list" -> Just $ ListItem $ mapMaybe getBodyItem value
         _ -> Nothing
 getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
