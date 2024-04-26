@@ -18,6 +18,7 @@ import Types
       Text(Code, Normal, Italic, Bold),
       Links(..),
       Header(date, title, author) )
+import GHC.IO.Exception (cannotCompactFunction)
 
 -- data Block =
 --     Paragraph [Inline]
@@ -178,7 +179,7 @@ toItemValue item indent = case item of
         ParagraphItem para      -> paragraphToMarkdown para indent
         ListItem list           -> listToMarkdown list indent
         SectionItem sect        -> sectionToMarkdown sect (indent + 1)
-        CodeBlockItem cblock    -> codeblockToMarkdown cblock
+        CodeBlockItem cblock    -> codeblockToMarkdown cblock indent
         LinksItem links         -> linksToMarkdown links
 
 paragraphToMarkdown :: Paragraph -> Int -> String
@@ -209,7 +210,7 @@ linksToMarkdown links = case links of
     Image url alt   -> "["++ alt ++ "]("
         ++ url ++ ")"
 
-codeblockToMarkdown :: String -> String
-codeblockToMarkdown cblock = "\n```\n"
-    ++ cblock
+codeblockToMarkdown :: [Item] -> Int -> String
+codeblockToMarkdown cblock _ = "\n```\n"
+    ++ forEachItem cblock 0
     ++ "\n```\n"

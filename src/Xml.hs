@@ -133,7 +133,7 @@ paragraphToXml para = case para of
         Code str    -> "<code>" ++ str ++ "</code>"
 
 listToXml :: [Item] -> String
-listToXml list = "<list>"
+listToXml list = "<list>\n"
     ++ forEachItem list
     ++ "</list>\n"
 
@@ -151,7 +151,7 @@ linksToXml links = case links of
         ++ alt
         ++ "</image>"
 
-codeblockToXml :: String -> String
+codeblockToXml :: [Item] -> String
 codeblockToXml cblock = "<codeblock>\n"
-    ++ cblock
+    ++ forEachItem cblock
     ++ "</codeblock>\n"
