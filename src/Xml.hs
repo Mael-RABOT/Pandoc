@@ -151,7 +151,7 @@ linksToXml links = case links of
         ++ alt
         ++ "</image>"
 
-codeblockToXml :: String -> String
+codeblockToXml :: [Item] -> String
 codeblockToXml cblock = "<codeblock>\n"
-    ++ cblock
+    ++ forEachItem cblock
     ++ "</codeblock>\n"

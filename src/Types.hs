@@ -55,7 +55,7 @@ data Item =
     ParagraphItem Paragraph
     | ListItem [Item]
     | SectionItem Section
-    | CodeBlockItem String
+    | CodeBlockItem [Item]
     | LinksItem Links
     deriving (Show, Eq)
 
