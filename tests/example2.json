@@ -1,7 +1,7 @@
 {
     "header": {
         "title": "Syntaxe JSON",
-        "author": "Fornes Leo",
+        "author": ["Fornes Leo", "tst"],
         "date": "2024-01-01"
     },
     "body": [
@@ -69,9 +69,10 @@
                                 },
                                 {
                                     "list": [
+                                        "zertyu",
                                         [
                                             "list item 1",
-                                            "dfghj"
+                                            "ertyu"
                                         ],
                                         [
                                             "list item 2"
