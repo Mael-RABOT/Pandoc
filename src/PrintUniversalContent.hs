@@ -39,7 +39,7 @@ printItem :: Item -> IO ()
 printItem (ParagraphItem paragraph) = printParagraph paragraph
 printItem (ListItem items) = mapM_ printItem items
 printItem (SectionItem section) = printSection section
-printItem (CodeBlockItem str) = putStrLn str
+printItem (CodeBlockItem cblock) = mapM_ printItem cblock
 printItem (LinksItem links) = printLinks links
 
 printUniversalContent :: UniversalContent -> IO ()
