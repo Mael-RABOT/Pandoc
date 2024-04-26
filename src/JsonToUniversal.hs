@@ -22,7 +22,7 @@ jsonToUniversal (Right (JsonObject jsonObject)) =
                   (getHeader header) (fromMaybe [] $ getBody body)
                 Nothing -> Left "No body found"
         Nothing -> Left "No header found"
-jsonToUniversal _m = Left "Invalid JSON"
+jsonToUniversal _ = Left "Invalid JSON"
 
 getHeader :: [(String, JsonValue)] -> Header
 getHeader jsonObject =
@@ -78,20 +78,22 @@ getOtherItem (JsonObject dict) = let (keys, value) = unzip dict
         "code"      -> Just $ ParagraphItem $ Text (toCode value)
         "link"      -> getLinkItem value
         "image"     -> getImageItem value
-        "list"      -> getListItem value
-        "codeblock" -> getCodeBlockItem value
+        "list"      -> getListItem (head value)
+        "codeblock" -> getCodeBlockItem (head value)
         _           -> Nothing
 getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
 
 
-getListItem :: [JsonValue] -> Maybe Item
-getListItem jsonArray =
+getListItem :: JsonValue -> Maybe Item
+getListItem (JsonArray jsonArray) =
     Just $ ListItem (getArrayContent jsonArray)
+getListItem _ = Nothing
 
-getCodeBlockItem :: [JsonValue] -> Maybe Item
-getCodeBlockItem jsonArray =
+getCodeBlockItem :: JsonValue -> Maybe Item
+getCodeBlockItem (JsonArray jsonArray) =
     Just $ CodeBlockItem (getArrayContent jsonArray)
+getCodeBlockItem _ = Nothing
 
 getLinkItem :: [JsonValue] -> Maybe Item
 getLinkItem [JsonObject link] =
