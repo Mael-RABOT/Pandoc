@@ -157,7 +157,7 @@ formatMarkdown = Formatter
     { begin = ""
     , onHeader = onHeaderMarkdown
     , onBody = onBodyMarkdown
-    , end = (++ "")}
+    , end = (++ "\n")}
 
 onHeaderMarkdown :: String -> Header -> String
 onHeaderMarkdown s h = s ++ "---\n"
@@ -171,20 +171,26 @@ onBodyMarkdown s items = s ++ forEachItem items 0
 
 forEachItem :: [Item] -> Int -> String
 forEachItem [] _ = ""
-forEachItem (x:xs) i = toItemValue x i
+forEachItem [x] i = "\n" ++ toItemValue x i
+forEachItem (x:xs) i = "\n" ++ toItemValue x i ++ "\n"
     ++ forEachItem xs i
+
+forEachItemInside :: [Item] -> Int -> String
+forEachItemInside [] _ = ""
+forEachItemInside (x:xs) i = toItemValue x i
+    ++ forEachItemInside xs i
 
 toItemValue :: Item -> Int -> String
 toItemValue item indent = case item of
         ParagraphItem para      -> paragraphToMarkdown para indent
         ListItem list           -> listToMarkdown list indent
         SectionItem sect        -> sectionToMarkdown sect (indent + 1)
-        CodeBlockItem cblock    -> codeblockToMarkdown cblock indent
+        CodeBlockItem cblock    -> codeblockToMarkdown cblock
         LinksItem links         -> linksToMarkdown links
 
 paragraphToMarkdown :: Paragraph -> Int -> String
 paragraphToMarkdown para indent = case para of
-    Content cont -> "\n" ++ forEachItem cont indent ++ "\n"
+    Content cont -> forEachItemInside cont indent
     Text txt     -> case txt of
         Normal str  -> str
         Italic str  -> "*" ++ str ++ "*"
@@ -193,24 +199,25 @@ paragraphToMarkdown para indent = case para of
 
 listToMarkdown :: [Item] -> Int -> String
 listToMarkdown [] _ = ""
-listToMarkdown (x:xs) i = "- " ++ toItemValue x i
-    ++ "\n- " ++ listToMarkdown xs i
+listToMarkdown [x] i = "- " ++ toItemValue x i
+listToMarkdown (x:xs) i = "- " ++ toItemValue x i ++ "\n"
+    ++ listToMarkdown xs i
 
 sectionToMarkdown :: Section -> Int -> String
 sectionToMarkdown sect indent = case name sect of
     Nothing  -> ""
     Just ""  -> ""
-    Just n   -> "\n" ++ concat (replicate indent "#") ++ " " ++ n ++ "\n"
+    Just n   -> concat (replicate indent "#") ++ " " ++ n ++ "\n"
     ++ forEachItem (content sect) indent
 
 linksToMarkdown :: Links -> String
 linksToMarkdown links = case links of
-    Link url cont   -> "["++ cont ++ "]("
+    Link url cont   -> "[" ++ forEachItemInside cont 0 ++ "]("
         ++ url ++ ")"
-    Image url alt   -> "["++ alt ++ "]("
+    Image url alt   -> "[" ++ forEachItemInside alt 0 ++ "]("
         ++ url ++ ")"
 
-codeblockToMarkdown :: [Item] -> Int -> String
-codeblockToMarkdown cblock _ = "\n```\n"
-    ++ forEachItem cblock 0
-    ++ "\n```\n"
+codeblockToMarkdown :: [Item] -> String
+codeblockToMarkdown cblock = "```\n"
+    ++ forEachItemInside cblock 0
+    ++ "\n```"

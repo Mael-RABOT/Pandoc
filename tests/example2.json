@@ -1,7 +1,7 @@
 {
     "header": {
         "title": "Syntaxe JSON",
-        "author": "Fornes Leo",
+        "author": ["Fornes Leo", "tst"],
         "date": "2024-01-01"
     },
     "body": [
@@ -69,8 +69,10 @@
                                 },
                                 {
                                     "list": [
+                                        "zertyu",
                                         [
-                                            "list item 1"
+                                            "list item 1",
+                                            "ertyu"
                                         ],
                                         [
                                             "list item 2"
@@ -80,13 +82,22 @@
                                         ]
                                     ]
                                 },
+                                "rtyui",
                                 [
                                     "This is a paragraph with a ",
                                     {
                                         "link": {
-                                            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
+                                            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQab_channel=RickAstley",
                                             "content": [
-                                                "link"
+                                                "link",
+                                                "rrr",
+                                                {
+                                                    "section": {
+                                                        "title": "header 4",
+                                                        "content":[
+                                                        ]
+                                                    }
+                                                }
                                             ]
                                         }
                                     },

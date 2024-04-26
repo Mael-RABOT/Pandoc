@@ -51,12 +51,12 @@ f2 (Tag v) = case tagToItem v of
 getLink :: [TagValue] -> Maybe String -> Either String Item
 getLink _ Nothing = Left "link's url attribute not found"
 getLink c (Just url) = Right $ LinksItem $ Link url
-    (extractString $ head c)
+    (map f2 c)
 
 getImage :: [TagValue] -> Maybe String -> Either String Item
 getImage _ Nothing = Left "image url attribute not found"
 getImage c (Just url) = Right $ LinksItem $ Image url
-    (extractString $ head c)
+    (map f2 c)
 
 tagToItem :: XmlTag -> Either String Item
 tagToItem (XmlTag "paragraph" c _) = Right $ ParagraphItem $

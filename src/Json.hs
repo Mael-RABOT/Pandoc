@@ -158,11 +158,11 @@ sectionToJson sect = "{\n\"section\": {\n"
 linksToJson :: Links -> String
 linksToJson links = case links of
     Link url cont   -> "{\n\"link\":{\n\"url\":\"" ++ url
-        ++ "\",\n\"content\": [\n\"" ++ cont
-        ++ "\"\n]\n}\n}"
+        ++ "\",\n\"content\": [\n" ++ forEachItem cont
+        ++ "\n]\n}\n}"
     Image url alt   -> "{\n\"image\":{\n\"url\":\"" ++ url
-        ++ "\",\n\"alt\": [\n\"" ++ alt
-        ++ "\"\n]\n}\n}"
+        ++ "\",\n\"alt\": [\n" ++ forEachItem alt
+        ++ "\n]\n}\n}"
 
 codeblockToJson :: [Item] -> String
 codeblockToJson cblock = "{\n\"codeblock\": [\n"
