@@ -84,6 +84,10 @@ getOtherItem (JsonObject dict) = let (keys, value) = unzip dict
 getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
 
+getCodeBlockItem :: [JsonValue] -> Maybe Item
+getCodeBlockItem jsonArray =
+    Just $ CodeBlockItem $ mapMaybe getBodyItem jsonArray
+
 getLinkItem :: [JsonValue] -> Maybe Item
 getLinkItem [JsonObject link] =
     case (lookup "url" link, lookup "content" link) of
