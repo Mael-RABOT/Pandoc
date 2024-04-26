@@ -26,16 +26,16 @@ source-repository head
 library
   exposed-modules:
       ArgsParser
+      DebugJson
       Formatter
       Json
+      JsonToUniversal
       Lib
+      Markdown
       Parse
       PrintUniversalContent
       Types
       Xml
-      Markdown
-      JsonToUniversal
-      DebugJson
       XmlToUniversalContent
   other-modules:
       Paths_mypandoc

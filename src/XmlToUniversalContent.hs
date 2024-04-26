@@ -65,7 +65,7 @@ tagToItem (XmlTag "section" c attrs) = Right $ SectionItem $
     Section (findByKey attrs "title") (map f2 c)
 tagToItem (XmlTag "list" c _) = Right $ ListItem $ map f2 c
 tagToItem (XmlTag "codeblock" c _) = Right $ CodeBlockItem $
-    extractString $ head c
+    map f2 c
 tagToItem (XmlTag "bold" c _) = Right $ ParagraphItem $ Text $
     Bold $ extractString $ head c
 tagToItem t = tagToItem2 t
