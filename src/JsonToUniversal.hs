@@ -73,20 +73,16 @@ getOtherItem :: JsonValue -> Maybe Item
 getOtherItem (JsonArray jsonArray) = processJsonArray jsonArray
 getOtherItem (JsonObject dict) = let (keys, value) = unzip dict
     in case head keys of
-        "bold" -> Just $ ParagraphItem $ Text (toBold value)
-        "italic" -> Just $ ParagraphItem $ Text (toItalic value)
-        "code" -> Just $ ParagraphItem $ Text (toCode value)
-        "codeblock" -> getCodeBlockItem value
-        "link" -> getLinkItem value
-        "image" -> getImageItem value
-        "list" -> Just $ ListItem $ mapMaybe getBodyItem value
-        _ -> Nothing
+        "bold"      -> Just $ ParagraphItem $ Text (toBold value)
+        "italic"    -> Just $ ParagraphItem $ Text (toItalic value)
+        "code"      -> Just $ ParagraphItem $ Text (toCode value)
+        "link"      -> getLinkItem value
+        "image"     -> getImageItem value
+        "list"      -> Just $ ListItem $ mapMaybe getBodyItem value
+        "codeblock" -> Just $ CodeBlockItem $ mapMaybe getBodyItem value
+        _           -> Nothing
 getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
-
-getCodeBlockItem :: [JsonValue] -> Maybe Item
-getCodeBlockItem jsonArray =
-    Just $ CodeBlockItem $ mapMaybe getBodyItem jsonArray
 
 getLinkItem :: [JsonValue] -> Maybe Item
 getLinkItem [JsonObject link] =

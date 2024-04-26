@@ -165,6 +165,6 @@ linksToJson links = case links of
         ++ "\"\n]\n}\n}"
 
 codeblockToJson :: [Item] -> String
-codeblockToJson cblock = "{\n\"codeblock\": [\n[\n"
+codeblockToJson cblock = "{\n\"codeblock\": [\n"
     ++ forEachItem cblock
-    ++ "\n]\n]\n}"
+    ++ "\n]\n}"
