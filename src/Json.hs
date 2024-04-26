@@ -138,10 +138,10 @@ paragraphToJson :: Paragraph -> String
 paragraphToJson para = case para of
     Content cont -> "[\n" ++ forEachItem cont ++ "\n]"
     Text txt     -> case txt of
-        Normal str  -> "\"" ++ str ++ "\""
-        Italic str  -> "{\n\"italic\": \"" ++ str ++ "\"\n}"
-        Bold str    -> "{\n\"bold\": \"" ++ str ++ "\"\n}"
-        Code str    -> "{\n\"code\": \"" ++ str ++ "\"\n}"
+        Normal str  -> show str
+        Italic str  -> "{\n\"italic\": " ++ show str ++ "\n}"
+        Bold str    -> "{\n\"bold\": " ++ show str ++ "\n}"
+        Code str    -> "{\n\"code\": " ++ show str ++ "\n}"
 
 listToJson :: [Item] -> String
 listToJson list = "{\n\"list\": [\n"

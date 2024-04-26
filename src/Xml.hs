@@ -110,7 +110,7 @@ onHeadetXml s h = s ++ "<header title=\"" ++ title h ++ "\">\n"
     ++ "</header>\n"
 
 onBodtXml :: String -> [Item] -> String
-onBodtXml s items = s ++ "<body>\n"  ++ forEachItem items ++ "</body>\n"
+onBodtXml s items = s ++ "<body>"  ++ forEachItem items ++ "</body>\n"
 
 forEachItem :: [Item] -> String
 forEachItem = concatMap toItemValue
@@ -125,7 +125,7 @@ toItemValue item = case item of
 
 paragraphToXml :: Paragraph -> String
 paragraphToXml para = case para of
-    Content cont -> "<paragraph>" ++ forEachItem cont ++ "</paragraph>\n"
+    Content cont -> "<paragraph>" ++ forEachItem cont ++ "</paragraph>"
     Text txt     -> case txt of
         Normal str  -> str
         Italic str  -> "<italic>" ++ str ++ "</italic>"
@@ -133,14 +133,14 @@ paragraphToXml para = case para of
         Code str    -> "<code>" ++ str ++ "</code>"
 
 listToXml :: [Item] -> String
-listToXml list = "<list>\n"
+listToXml list = "<list>"
     ++ forEachItem list
-    ++ "</list>\n"
+    ++ "</list>"
 
 sectionToXml :: Section -> String
-sectionToXml sect = "<section title=\"" ++ maybe "" id (name sect) ++ "\">\n"
+sectionToXml sect = "<section title=\"" ++ maybe "" id (name sect) ++ "\">"
     ++ forEachItem (content sect)
-    ++ "</section>\n"
+    ++ "</section>"
 
 linksToXml :: Links -> String
 linksToXml links = case links of
@@ -152,6 +152,6 @@ linksToXml links = case links of
         ++ "</image>"
 
 codeblockToXml :: [Item] -> String
-codeblockToXml cblock = "<codeblock>\n"
+codeblockToXml cblock = "<codeblock>"
     ++ forEachItem cblock
-    ++ "</codeblock>\n"
+    ++ "</codeblock>"
