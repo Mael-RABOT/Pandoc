@@ -39,9 +39,10 @@
                             "content": [
                                 {
                                     "codeblock": [
-                                        [
-                                            "This is a code block."
-                                        ],
+                                        "This is a code block.",
+                                        {
+                                            "bold":"boldahah"
+                                        },
                                         {
                                             "section": {
                                                 "title": "",
@@ -109,6 +110,9 @@
                                         "image": {
                                             "url": "https://cdn-images-1.medium.com/max/697/1*tsHrUKwQXG1YZX0l957ISw.png",
                                             "alt": [
+                                                {
+                                                    "bold":"azertyui"
+                                                },
                                                 "Text to replace image"
                                             ]
                                         }
