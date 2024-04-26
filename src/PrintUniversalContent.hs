@@ -23,23 +23,28 @@ printHeader (Header t a d) =
     putStrLn ("Date: " ++ maybe "N/A" id d)
 
 printLinks :: Links -> IO ()
-printLinks (Link url cont) = printf "Link: %s, Content: %s\n" url cont
-printLinks (Image url alt) = printf "Image: %s, Alt: %s\n" url alt
+printLinks (Link url cont) = printf "Link: %s, Content:\n" url
+    >> mapM_ printItem cont
+printLinks (Image url alt) = printf "Image: %s, Alt:\n" url
+    >> mapM_ printItem alt
 
 printParagraph :: Paragraph -> IO ()
 printParagraph (Text str) = putStrLn $ show str
-printParagraph (Content items) = mapM_ printItem items
+printParagraph (Content items) = putStrLn "p" >> mapM_ printItem items
+    >> putStrLn "/p"
 
 printSection :: Section -> IO ()
 printSection (Section name content) =
     putStrLn ("Section: " ++ maybe "N/A" id name) >>
-    mapM_ printItem content
+    putStrLn "[" >> mapM_ printItem content >> putStrLn "]"
 
 printItem :: Item -> IO ()
 printItem (ParagraphItem paragraph) = printParagraph paragraph
-printItem (ListItem items) = mapM_ printItem items
+printItem (ListItem items) = putStrLn "list[" >> mapM_ printItem items
+    >> putStrLn "]"
 printItem (SectionItem section) = printSection section
-printItem (CodeBlockItem cblock) = mapM_ printItem cblock
+printItem (CodeBlockItem cblock) = putStrLn "codeb[" >> mapM_ printItem cblock
+    >> putStrLn "]"
 printItem (LinksItem links) = printLinks links
 
 printUniversalContent :: UniversalContent -> IO ()

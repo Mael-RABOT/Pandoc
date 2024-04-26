@@ -26,10 +26,10 @@ jsonToUniversal _m = Left "Invalid JSON"
 
 getHeader :: [(String, JsonValue)] -> Header
 getHeader jsonObject =
-    let title = fromMaybe "" $ lookup "title" jsonObject >>= getString
-        author = lookup "author" jsonObject >>= getString
-        date = lookup "date" jsonObject >>= getString
-    in Header title author date
+    let titleStr = fromMaybe "" $ lookup "title" jsonObject >>= getString
+        authorStr = lookup "author" jsonObject >>= getString
+        dateStr = lookup "date" jsonObject >>= getString
+    in Header titleStr authorStr dateStr
 
 getString :: JsonValue -> Maybe String
 getString (JsonString s) = Just s
@@ -50,11 +50,11 @@ getSectionItem (JsonObject dict) =
     case (lookup "title" dict, lookup "content" dict) of
         (Just (JsonString title), Just (JsonArray content)) ->
             Just $ SectionItem $ Section
-              (Just title) (getSectionContent content)
+              (Just title) (getArrayContent content)
         _ -> Nothing
 
-getSectionContent :: [JsonValue] -> [Item]
-getSectionContent arr = mapMaybe getBodyItem arr
+getArrayContent :: [JsonValue] -> [Item]
+getArrayContent = mapMaybe getBodyItem
 
 toBold :: [JsonValue] -> Text
 toBold value = Bold (getStringValue $ head value)
@@ -78,29 +78,34 @@ getOtherItem (JsonObject dict) = let (keys, value) = unzip dict
         "code"      -> Just $ ParagraphItem $ Text (toCode value)
         "link"      -> getLinkItem value
         "image"     -> getImageItem value
-        "list"      -> Just $ ListItem $ mapMaybe getBodyItem value
-        "codeblock" -> Just $ CodeBlockItem $ mapMaybe getBodyItem value
+        "list"      -> getListItem value
+        "codeblock" -> getCodeBlockItem value
         _           -> Nothing
 getOtherItem (JsonString str) = Just $ ParagraphItem $ Text (Normal str)
 getOtherItem _ = Nothing
 
+
+getListItem :: [JsonValue] -> Maybe Item
+getListItem jsonArray =
+    Just $ ListItem (getArrayContent jsonArray)
+
 getCodeBlockItem :: [JsonValue] -> Maybe Item
 getCodeBlockItem jsonArray =
-    Just $ CodeBlockItem $ mapMaybe getBodyItem jsonArray
+    Just $ CodeBlockItem (getArrayContent jsonArray)
 
 getLinkItem :: [JsonValue] -> Maybe Item
 getLinkItem [JsonObject link] =
     case (lookup "url" link, lookup "content" link) of
-        (Just (JsonString url), Just (JsonArray [JsonString content])) ->
-            Just $ LinksItem $ Link url content
+        (Just (JsonString url), Just (JsonArray cont)) ->
+            Just $ LinksItem $ Link url (getArrayContent cont)
         _ -> Nothing
 getLinkItem _ = Nothing
 
 getImageItem :: [JsonValue] -> Maybe Item
 getImageItem [JsonObject image] =
     case (lookup "url" image, lookup "alt" image) of
-        (Just (JsonString url), Just (JsonArray [JsonString alt])) ->
-            Just $ LinksItem $ Image url alt
+        (Just (JsonString url), Just (JsonArray alt)) ->
+            Just $ LinksItem $ Image url (getArrayContent alt)
         _ -> Nothing
 getImageItem _ = Nothing
 

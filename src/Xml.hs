@@ -145,10 +145,10 @@ sectionToXml sect = "<section title=\"" ++ maybe "" id (name sect) ++ "\">\n"
 linksToXml :: Links -> String
 linksToXml links = case links of
     Link url cont   -> "<link url=\"" ++ url ++ "\">"
-        ++ cont
+        ++ forEachItem cont
         ++ "</link>"
     Image url alt   -> "<image url=\"" ++ url ++ "\">"
-        ++ alt
+        ++ forEachItem alt
         ++ "</image>"
 
 codeblockToXml :: [Item] -> String

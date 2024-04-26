@@ -18,7 +18,9 @@
                     <paragraph>list item 2</paragraph>
                     <paragraph>list item 3</paragraph>
                 </list>
-                <paragraph>This is a paragraph with a <link url="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley">link</link>.</paragraph>
+                <paragraph>This is a paragraph with a <link url="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley">
+                    <bold>link</bold>
+                </link>.</paragraph>
                 <paragraph>This is a paragraph with an image <image url="https://cdn-images-1.medium.com/max/697/1*tsHrUKwQXG1YZX0l957ISw.png">Text to replace image</image>.</paragraph>
                 <section title="">
                     <section title="header 4">
