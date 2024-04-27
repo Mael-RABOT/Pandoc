@@ -1,10 +1,10 @@
 ---
-title: Syntaxe MARKDOWN
+title: Syntaxe
 author: Fornes Leo
 date: 2024-01-01
 ---
 
-This document is a simple example of the MARKDOWN syntax.
+This document is a simple example.
 
 Every syntax element is displayed in this document.
 
