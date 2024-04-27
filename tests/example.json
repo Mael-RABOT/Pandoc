@@ -61,7 +61,7 @@
                                     "This is a paragraph with a ",
                                     {
                                         "link": {
-                                            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley",
+                                            "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQab_channel=RickAstley",
                                             "content": [
                                                 "link"
                                             ]
