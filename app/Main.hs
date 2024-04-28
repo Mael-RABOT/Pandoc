@@ -88,4 +88,5 @@ main = do
     args <- getArgs
     case parseArgs args of
         Right a -> run a
-        Left errMsg -> putStrLn usage >> putStrLn errMsg >> exitWith (ExitFailure 84)
+        Left errMsg -> putStrLn usage >> putStrLn errMsg
+            >> exitWith (ExitFailure 84)
