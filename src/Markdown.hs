@@ -147,7 +147,7 @@ parseInline =
     <|> (parseTextData >>= pure . InlineText)
 
 parseParagraph :: Parser [Inline]
-parseParagraph = parseSome (parseSpaces *> parseInline)
+parseParagraph = parseSome (parseInline)
 
 parseBlock :: Parser Block
 parseBlock =
