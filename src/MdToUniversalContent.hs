@@ -29,7 +29,7 @@ convertHeader map = case findByKey map "title" of
     Just t -> Right $ Header t (findByKey map "author") (findByKey map "date")
 
 convertBody :: [Block] -> Either String [Item]
-convertBody blocks = Right $ concatMap blockToItem blocks
+convertBody blocks = Right $ map blockToItem blocks
 
 textDataToText :: TextData -> Text
 textDataToText (TextNormal txt) = Normal txt
@@ -38,15 +38,17 @@ textDataToText (TextBold txt) = Bold txt
 textDataToText (TextCode txt) = Code txt
 
 inlineToParagraph :: Inline -> Item
-inlineToParagraph (InlineText t) = ParagraphItem $ Content
-    [ParagraphItem $ Text (textDataToText t)]
+inlineToParagraph (InlineText t) = ParagraphItem $ Text (textDataToText t)
 inlineToParagraph (InlineLink c l) = LinksItem $ Link l
     [ParagraphItem $ Text $ Normal c]
 inlineToParagraph (InlineCodeBlock c) = CodeBlockItem
     [ParagraphItem $ Content [ParagraphItem $ Text $ Normal c]]
 
-blockToItem :: Block -> [Item]
-blockToItem (MdParagraph v) = map inlineToParagraph v
-blockToItem (MdSection n v) = [SectionItem $
-    Section (Just n) (concatMap blockToItem v)]
-blockToItem (MdList v) = [ListItem $ map inlineToParagraph v]
+listToParagraph :: Inline -> Item
+listToParagraph inln = ParagraphItem $ Content [inlineToParagraph inln]
+
+blockToItem :: Block -> Item
+blockToItem (MdParagraph v) = ParagraphItem $ Content (map inlineToParagraph v)
+blockToItem (MdSection n v) = SectionItem $
+    Section (Just n) (map blockToItem v)
+blockToItem (MdList v) = ListItem $ map listToParagraph v

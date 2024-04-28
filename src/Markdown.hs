@@ -9,7 +9,7 @@ module Markdown (formatMarkdown, parseMarkdown, Markdown(..), Block(..), TextDat
 
 import Formatter ( Formatter(..) )
 import Control.Applicative
-import Parse (Parser(..), parseSome, parseSpaces, parseChar, parseSatisfy)
+import Parse (Parser(..), parseSome, parseSpaces, parseChar, parseSatisfy, parseMany)
 import Data.List (isPrefixOf, intercalate)
 import Types
     ( Item(..),
@@ -108,6 +108,7 @@ parseChildSection :: Int -> Parser Block
 parseChildSection i =
     parseSpaces >>
     parsePrefix (replicate (i + 1) '#') >>
+    (parseMany (parseSatisfy (=='#'))) >>
     parseSpaces >>
     parseBase >>= \ name ->
     parseSpaces >>
@@ -147,7 +148,7 @@ parseInline =
     <|> (parseTextData >>= pure . InlineText)
 
 parseParagraph :: Parser [Inline]
-parseParagraph = parseSome (parseSpaces *> parseInline)
+parseParagraph = parseSome (parseInline)
 
 parseBlock :: Parser Block
 parseBlock =
