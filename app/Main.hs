@@ -21,6 +21,7 @@ import XmlToUniversalContent ( xmlToUniversalContent )
 import Prelude
 import Formatter ( Formatter, runFormatter )
 import Types (UniversalContent(..), Section (content))
+import Prelude (putStr)
 
 getFormatter :: String -> Formatter
 getFormatter outFormat = case outFormat of
@@ -75,10 +76,17 @@ run args = do
         Right result -> printWhere (outputFile args) result
         Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
 
+usage :: String
+usage = "USAGE: ./mypandoc -i ifile -f oformat [-o ofile] [-e iformat]\n"
+    ++ "\tifile\t\tpath to the file to convert\n"
+    ++ "\toformat\t\toutput format (xml, json, markdown)\n"
+    ++ "\tofile\t\tpath to the output file\n"
+    ++ "\tiformat\t\tinput format (xml, json, markdown\n"
 
 main :: IO ()
 main = do
     args <- getArgs
     case parseArgs args of
         Right a -> run a
-        Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
+        Left errMsg -> putStrLn usage >> putStrLn errMsg
+            >> exitWith (ExitFailure 84)
