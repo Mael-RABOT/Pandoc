@@ -108,6 +108,7 @@ parseChildSection :: Int -> Parser Block
 parseChildSection i =
     parseSpaces >>
     parsePrefix (replicate (i + 1) '#') >>
+    (parseSome (parseSatisfy (=='#'))) >>
     parseSpaces >>
     parseBase >>= \ name ->
     parseSpaces >>
