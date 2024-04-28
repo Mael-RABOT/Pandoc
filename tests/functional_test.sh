@@ -3,6 +3,8 @@
 tests=(
   "./mypandoc -i tests/example.xml -f json -o tests/exemple_test.json -e xml"
   "./mypandoc -i tests/example.json -f xml -o tests/exemple_test.xml -e json"
+  "./mypandoc -i tests/example.json -f json -o tests/exemple_test.json -e json"
+  "./mypandoc -i tests/example.xml -f xml -o tests/exemple_test.xml -e xml"
 )
 
 success_count=0
@@ -35,6 +37,7 @@ do
     echo -e "${red}Test échoué : $i${nc}"
     fail_count=$((fail_count+1))
   fi
+  rm -f tests/exemple_test."$format"
 done
 
 echo
