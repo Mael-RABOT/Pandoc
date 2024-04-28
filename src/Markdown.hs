@@ -5,7 +5,7 @@
 -- Markdown.hs
 -}
 
-module Markdown (formatMarkdown) where
+module Markdown (formatMarkdown, parseMarkdown, Markdown(..), Block(..), TextData(..), Inline(..)) where
 
 import Formatter ( Formatter(..) )
 import Control.Applicative
@@ -20,135 +20,155 @@ import Types
       Header(date, title, author) )
 import GHC.IO.Exception (cannotCompactFunction)
 
--- data Block =
---     Paragraph [Inline]
---     | Section String [Block]
---     | List [Inline]
---     deriving (Show)
+data Block =
+    MdParagraph [Inline]
+    | MdSection String [Block]
+    | MdList [Inline]
+    deriving (Show)
 
--- data TextData =
---     Normal String
---     | Italic String
---     | Bold String
---     | Code String
---     deriving (Show)
+data TextData =
+    TextNormal String
+    | TextItalic String
+    | TextBold String
+    | TextCode String
+    deriving (Show)
 
--- data Inline =
---     Text TextData
---     | Link String String
---     | CodeBlock String
---     deriving (Show)
+data Inline =
+    InlineText TextData
+    | InlineLink String String
+    | InlineCodeBlock String
+    deriving (Show)
 
--- data Markdown = Markdown {
---     header :: [(String, String)],
---     body :: [Block]
--- } deriving (Show)
+data Markdown = Markdown {
+    mdHeader :: [(String, String)],
+    mdBody :: [Block]
+} deriving (Show)
 
--- parsePrefix :: String -> Parser String
--- parsePrefix pre = Parser $ \ input ->
---     if isPrefixOf pre input then Right (pre, drop (length pre) input)
---     else Left $ "Prefix " ++ pre ++ " not found"
+parsePrefix :: String -> Parser String
+parsePrefix pre = Parser $ \ input ->
+    if isPrefixOf pre input then Right (pre, drop (length pre) input)
+    else Left $ "Prefix " ++ pre ++ " not found"
 
--- parseWhileChar :: Char -> Parser String
--- parseWhileChar c = parseSome (parseSatisfy (/=c))
+parseWhileChar :: Char -> Parser String
+parseWhileChar c = parseSome (parseSatisfy (/=c))
 
--- parseMarkdownHeaderData :: Parser (String, String)
--- parseMarkdownHeaderData =
---     parseSatisfy (/='-') >>= \c ->
---     parseSpaces >>
---     parseWhileChar ':' >>= \key ->
---     parseChar ':' >>
---     parseSpaces >>
---     parseWhileChar '\n' >>= \value ->
---     parseChar '\n' >>
---     pure (c:key, value)
+parseMarkdownHeaderData :: Parser (String, String)
+parseMarkdownHeaderData =
+    parseSatisfy (/='-') >>= \c ->
+    parseSpaces >>
+    parseWhileChar ':' >>= \key ->
+    parseChar ':' >>
+    parseSpaces >>
+    parseWhileChar '\n' >>= \value ->
+    parseChar '\n' >>
+    pure (c:key, value)
 
--- parseHeader :: Parser [(String, String)]
--- parseHeader =
---     parsePrefix "---" >>
---     parseChar '\n' >>
---     parseSome parseMarkdownHeaderData >>= \ d ->
---     parsePrefix "---" >>
---     pure d
+parseHeader :: Parser [(String, String)]
+parseHeader =
+    parsePrefix "---" >>
+    parseChar '\n' >>
+    parseSome parseMarkdownHeaderData >>= \ d ->
+    parsePrefix "---" >>
+    pure d
 
--- parseBase :: Parser String
--- parseBase = parseSome (parseSatisfy (not . (\c -> c `elem` "\n`*[]-#")))
+parseBase :: Parser String
+parseBase = parseSome (parseSatisfy (not . (\c -> c `elem` "\n`*[]-#")))
 
--- parseTextDataNormal :: Parser TextData
--- parseTextDataNormal = parseBase >>= pure . Normal
+parseTextDataNormal :: Parser TextData
+parseTextDataNormal = parseBase >>= pure . TextNormal
 
--- parseTextDataItalic :: Parser TextData
--- parseTextDataItalic = (parseChar '*' *> parseBase <* (parseChar '*')) >>=
---     pure . Italic
+parseTextDataItalic :: Parser TextData
+parseTextDataItalic = (parseChar '*' *> parseBase <* (parseChar '*')) >>=
+    pure . TextItalic
 
--- parseTextDataBold :: Parser TextData
--- parseTextDataBold = (parsePrefix "**" *> parseBase <* (parseChar '*')
---     <* (parseChar '*')) >>=
---     pure . Bold
+parseTextDataBold :: Parser TextData
+parseTextDataBold = (parsePrefix "**" *> parseBase <* (parseChar '*')
+    <* (parseChar '*')) >>=
+    pure . TextBold
 
--- parseTextDataCode :: Parser TextData
--- parseTextDataCode = (parseChar '`' *> parseBase <* (parseChar '`')) >>=
---     pure . Code
+parseTextDataCode :: Parser TextData
+parseTextDataCode = (parseChar '`' *> parseBase <* (parseChar '`')) >>=
+    pure . TextCode
 
--- parseTextData :: Parser TextData
--- parseTextData =
---     parseTextDataCode
---     <|> parseTextDataBold
---     <|> parseTextDataItalic
---     <|> parseTextDataNormal
+parseTextData :: Parser TextData
+parseTextData =
+    parseTextDataCode
+    <|> parseTextDataBold
+    <|> parseTextDataItalic
+    <|> parseTextDataNormal
 
--- parseList :: Parser Block
--- parseList = (parseSome (parseSpaces *> (parseChar '-') *>
---     parseSpaces *> parseInline)) >>= (pure . List)
+parseList :: Parser Block
+parseList = (parseSome (parseSpaces *> (parseChar '-') *>
+    parseSpaces *> parseInline)) >>= (pure . MdList)
 
--- parseSection :: Parser Block
--- parseSection =
---     parseSpaces >>
---     parseSome (parseSatisfy (=='#')) >>
---     parseSpaces >>
---     parseBase >>= \ name ->
---     parseSpaces >>
---     parseBody >>= pure . (Section name)
+parseSectionContent :: Int -> Parser [Block]
+parseSectionContent i = parseSome (parseSpaces *> (parseChildBlock i))
+
+parseChildSection :: Int -> Parser Block
+parseChildSection i =
+    parseSpaces >>
+    parsePrefix (replicate (i + 1) '#') >>
+    parseSpaces >>
+    parseBase >>= \ name ->
+    parseSpaces >>
+    (parseSectionContent i) >>= pure . (MdSection name)
+
+parseSection :: Parser Block
+parseSection =
+    parseSpaces >>
+    parseSome (parseSatisfy (=='#')) >>
+    parseSpaces >>
+    parseBase >>= \ name ->
+    parseSpaces >>
+    (parseSectionContent 1) >>= pure . (MdSection name)
 
 
--- parseLink :: Parser Inline
--- parseLink =
---     parseChar '[' >>
---     parseBase >>= \ name ->
---     parseChar ']' >>
---     parseSpaces >>
---     parseChar '(' >>
---     parseWhileChar ')' >>= \ value ->
---     parseChar ')' >>
---     pure (Link name value)
+parseLink :: Parser Inline
+parseLink =
+    parseChar '[' >>
+    parseBase >>= \ name ->
+    parseChar ']' >>
+    parseSpaces >>
+    parseChar '(' >>
+    parseWhileChar ')' >>= \ value ->
+    parseChar ')' >>
+    pure (InlineLink name value)
 
--- parseCodeBlock :: Parser Inline
--- parseCodeBlock = (parsePrefix "```" *> parseSpaces *>
---     parseBase <* parseSpaces <* ((parseChar '`') <* (parseChar '`')
---     <* (parseChar '`'))) >>=
---         pure . CodeBlock
+parseCodeBlock :: Parser Inline
+parseCodeBlock = (parsePrefix "```" *> parseSpaces *>
+    parseBase <* parseSpaces <* ((parseChar '`') <* (parseChar '`')
+    <* (parseChar '`'))) >>=
+        pure . InlineCodeBlock
 
--- parseInline :: Parser Inline
--- parseInline =
---     parseLink
---     <|> parseCodeBlock
---     <|> (parseTextData >>= pure . Text)
+parseInline :: Parser Inline
+parseInline =
+    parseLink
+    <|> parseCodeBlock
+    <|> (parseTextData >>= pure . InlineText)
 
--- parseParagraph :: Parser [Inline]
--- parseParagraph = parseSome (parseSpaces *> parseInline)
+parseParagraph :: Parser [Inline]
+parseParagraph = parseSome (parseSpaces *> parseInline)
 
--- parseBlock :: Parser Block
--- parseBlock =
---     parseSection
---     <|> parseList
---     <|> (parseParagraph >>= pure . Paragraph)
+parseBlock :: Parser Block
+parseBlock =
+    parseSection
+    <|> parseList
+    <|> (parseParagraph >>= pure . MdParagraph)
+    -- <|> pure (Paragraph [])
 
--- parseBody :: Parser [Block]
--- parseBody = parseSome (parseSpaces *> parseBlock)
+parseChildBlock :: Int -> Parser Block
+parseChildBlock i =
+    (parseChildSection i)
+    <|> parseList
+    <|> (parseParagraph >>= pure . MdParagraph)
+    -- c
 
--- parseMarkdown :: Parser Markdown
--- parseMarkdown = parseHeader >>= \ h ->
---     parseBody >>= pure . (Markdown h)
+parseBody :: Parser [Block]
+parseBody = parseSome (parseSpaces *> parseBlock)
+
+parseMarkdown :: Parser Markdown
+parseMarkdown = parseHeader >>= \ h ->
+    parseBody >>= pure . (Markdown h)
 
 -- PRINTER MARKDOWN
 
@@ -214,7 +234,7 @@ linksToMarkdown :: Links -> String
 linksToMarkdown links = case links of
     Link url cont   -> "[" ++ forEachItemInside cont 0 ++ "]("
         ++ url ++ ")"
-    Image url alt   -> "[" ++ forEachItemInside alt 0 ++ "]("
+    Image url alt   -> "![" ++ forEachItemInside alt 0 ++ "]("
         ++ url ++ ")"
 
 codeblockToMarkdown :: [Item] -> String
