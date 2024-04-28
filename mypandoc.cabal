@@ -32,12 +32,12 @@ library
       JsonToUniversal
       Lib
       Markdown
+      MdToUniversalContent
       Parse
       PrintUniversalContent
       Types
       Xml
       XmlToUniversalContent
-      MdToUniversalContent
   other-modules:
       Paths_mypandoc
   autogen-modules:
@@ -74,6 +74,7 @@ test-suite mypandoc-test
       JsonToUniversal
       Lib
       Markdown
+      MdToUniversalContent
       Parse
       PrintUniversalContent
       Types

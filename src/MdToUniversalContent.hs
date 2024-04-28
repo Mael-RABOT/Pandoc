@@ -7,8 +7,9 @@
 
 module MdToUniversalContent (markdownToUniversalContent) where
 
-import Markdown (Markdown(..), parseMarkdown, Block(..), TextData(..))
+import Markdown (Markdown(..), parseMarkdown, Block(..), TextData(..), Inline(..))
 import Types (Header(..), Item(..), Paragraph(..), UniversalContent(..), Section(..), Links(..), Text(..))
+import Data.Maybe (mapMaybe)
 
 findByKey :: [(String, String)] -> String -> Maybe String
 findByKey ((k, v):xs) tc | tc == k = Just v
@@ -28,7 +29,7 @@ convertHeader map = case findByKey map "title" of
     Just t -> Right $ Header t (findByKey map "author") (findByKey map "date")
 
 convertBody :: [Block] -> Either String [Item]
-convertBody blocks = Right $ map blockToItem blocks
+convertBody blocks = Right $ concatMap blockToItem blocks
 
 textDataToText :: TextData -> Text
 textDataToText (TextNormal txt) = Normal txt
@@ -36,11 +37,16 @@ textDataToText (TextItalic txt) = Italic txt
 textDataToText (TextBold txt) = Bold txt
 textDataToText (TextCode txt) = Code txt
 
-inlineToParagraph :: Inline -> Paragraph
-inlineToParagraph (TextData t) = textDataToText t
-inlineToParagraph (TextData t) = textDataToText
+inlineToParagraph :: Inline -> Item
+inlineToParagraph (InlineText t) = ParagraphItem $ Content
+    [ParagraphItem $ Text (textDataToText t)]
+inlineToParagraph (InlineLink c l) = LinksItem $ Link l
+    [ParagraphItem $ Text $ Normal c]
+inlineToParagraph (InlineCodeBlock c) = CodeBlockItem
+    [ParagraphItem $ Content [ParagraphItem $ Text $ Normal c]]
 
-blockToItem :: Block -> Item
-blockToItem (MdParagraph v) = ParagraphItem inlineToParagraph
-blockToItem (MdSection n v) = ListItem []
-blockToItem (MdList v) = ListItem []
+blockToItem :: Block -> [Item]
+blockToItem (MdParagraph v) = map inlineToParagraph v
+blockToItem (MdSection n v) = [SectionItem $
+    Section (Just n) (concatMap blockToItem v)]
+blockToItem (MdList v) = [ListItem $ map inlineToParagraph v]
