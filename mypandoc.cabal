@@ -37,6 +37,7 @@ library
       Types
       Xml
       XmlToUniversalContent
+      MdToUniversalContent
   other-modules:
       Paths_mypandoc
   autogen-modules:
