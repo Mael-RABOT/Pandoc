@@ -35,10 +35,14 @@ jsonEngine str = case runParser parseJson str of
 
 xmlEngine :: String -> Either String UniversalContent
 xmlEngine str = case runParser parseXml str of
-    Right (xml, _) -> case xmlToUniversalContent (Right xml) of
-        Right uni -> Right uni
-        Left err -> Left err
+    Right (xml, _) -> xmlToUniversalContent $ Right xml
     Left err ->  Left err
+
+markdownEngine :: String -> Either String UniversalContent
+markdownEngine str = Left "no MD converter"
+    -- case runParser parseMarkdown str of
+    -- Right (markdown, _) -> markdownToUniversalContent $ Right markdown
+    -- Left err ->  Left err
 
 printWhere :: Maybe String -> String -> IO ()
 printWhere Nothing str = putStr str
@@ -48,7 +52,7 @@ getEngine :: String -> (String -> Either String UniversalContent)
 getEngine format = case format of
     "json"      -> jsonEngine
     "xml"       -> xmlEngine
-    "markdown"  -> xmlEngine
+    "markdown"  -> markdownEngine
 
 runEngine :: String -> Args -> Either String String
 runEngine content (Args _ (Just format) _ (Just out)) =
@@ -60,7 +64,9 @@ runEngine content (Args _ _ _ (Just out)) =
         Right ok -> Right (runFormatter (getFormatter out) ok)
         Left _ -> case xmlEngine content of
             Right ok -> Right (runFormatter (getFormatter out) ok)
-            Left err -> Left "err: could not convert"
+            Left err -> case markdownEngine content of
+                Right ok -> Right (runFormatter (getFormatter out) ok)
+                Left err -> Left "err: could not convert"
 
 run :: Args -> IO ()
 run args = do
