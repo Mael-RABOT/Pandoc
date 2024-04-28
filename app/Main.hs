@@ -40,8 +40,8 @@ xmlEngine str = case runParser parseXml str of
     Right (xml, _) -> xmlToUniversalContent $ Right xml
     Left err ->  Left err
 
-mdEngine :: String -> Either String UniversalContent
-mdEngine str = case runParser parseMarkdown str of
+markdownEngine :: String -> Either String UniversalContent
+markdownEngine str = case runParser parseMarkdown str of
     Right (md, _) -> markdownToUniversalContent $ Right md
     Left err ->  Left err
 
