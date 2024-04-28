@@ -17,23 +17,17 @@ This is a paragraph with **bold**, *italic* and `code` text.
 ## header 2
 
 ```
-
 This is a code block.
-
 ```
-- 
-list item 1
 
-- - 
-list item 2
+- list item 1
+- list item 2
+- list item 3
 
-- - 
-list item 3
-
-- 
 This is a paragraph with a [link](https://www.youtube.com/watch?v=dQw4w9WgXcQab_channel=RickAstley).
 
-This is a paragraph with an image [Text to replace image](https://cdn-images-1.medium.com/max/697/1*tsHrUKwQXG1YZX0l957ISw.png).
+This is a paragraph with an image ![Text to replace image](https://cdn-images-1.medium.com/max/697/1*tsHrUKwQXG1YZX0l957ISw.png).
+
 
 #### header 4
 

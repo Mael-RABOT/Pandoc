@@ -234,7 +234,7 @@ linksToMarkdown :: Links -> String
 linksToMarkdown links = case links of
     Link url cont   -> "[" ++ forEachItemInside cont 0 ++ "]("
         ++ url ++ ")"
-    Image url alt   -> "[" ++ forEachItemInside alt 0 ++ "]("
+    Image url alt   -> "![" ++ forEachItemInside alt 0 ++ "]("
         ++ url ++ ")"
 
 codeblockToMarkdown :: [Item] -> String
