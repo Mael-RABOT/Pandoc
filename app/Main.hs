@@ -14,10 +14,11 @@ import Data.Maybe (fromJust)
 import Json (parseJson, formatJson)
 import Xml (parseXml, formatXml)
 import Parse (Parser(..))
-import Markdown ( formatMarkdown )
+import Markdown ( formatMarkdown, parseMarkdown )
 import ArgsParser (parseArgs, Args(..))
 import JsonToUniversal ( jsonToUniversal )
 import XmlToUniversalContent ( xmlToUniversalContent )
+import MdToUniversalContent (markdownToUniversalContent)
 import Prelude
 import Formatter ( Formatter, runFormatter )
 import Types (UniversalContent(..), Section (content))
@@ -39,11 +40,10 @@ xmlEngine str = case runParser parseXml str of
     Right (xml, _) -> xmlToUniversalContent $ Right xml
     Left err ->  Left err
 
-markdownEngine :: String -> Either String UniversalContent
-markdownEngine str = Left "no MD converter"
-    -- case runParser parseMarkdown str of
-    -- Right (markdown, _) -> markdownToUniversalContent $ Right markdown
-    -- Left err ->  Left err
+mdEngine :: String -> Either String UniversalContent
+mdEngine str = case runParser parseMarkdown str of
+    Right (md, _) -> markdownToUniversalContent $ Right md
+    Left err ->  Left err
 
 printWhere :: Maybe String -> String -> IO ()
 printWhere Nothing str = putStr str
