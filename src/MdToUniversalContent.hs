@@ -48,6 +48,8 @@ listToParagraph :: Inline -> Item
 listToParagraph inln = ParagraphItem $ Content [inlineToParagraph inln]
 
 blockToItem :: Block -> Item
+blockToItem (MdParagraph [InlineCodeBlock c]) = inlineToParagraph
+    (InlineCodeBlock c)
 blockToItem (MdParagraph v) = ParagraphItem $ Content (map inlineToParagraph v)
 blockToItem (MdSection n v) = SectionItem $
     Section (Just n) (map blockToItem v)
