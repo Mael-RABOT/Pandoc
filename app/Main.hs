@@ -20,15 +20,13 @@ import JsonToUniversal ( jsonToUniversal )
 import XmlToUniversalContent ( xmlToUniversalContent )
 import Prelude
 import Formatter ( Formatter, runFormatter )
-import Types (UniversalContent(..))
+import Types (UniversalContent(..), Section (content))
 
-getFormatter :: Args -> Formatter
-getFormatter (Args _ _ _ (Just format)) = case format of
+getFormatter :: String -> Formatter
+getFormatter outFormat = case outFormat of
         "json"      -> formatJson
         "markdown"  -> formatMarkdown
         "xml"       -> formatXml
-        _           -> formatMarkdown
-getFormatter _ = formatMarkdown
 
 jsonEngine :: String -> Either String UniversalContent
 jsonEngine str = case runParser parseJson str of
@@ -40,20 +38,42 @@ xmlEngine str = case runParser parseXml str of
     Right (xml, _) -> xmlToUniversalContent $ Right xml
     Left err ->  Left err
 
+markdownEngine :: String -> Either String UniversalContent
+markdownEngine str = Left "no MD converter"
+    -- case runParser parseMarkdown str of
+    -- Right (markdown, _) -> markdownToUniversalContent $ Right markdown
+    -- Left err ->  Left err
+
 printWhere :: Maybe String -> String -> IO ()
 printWhere Nothing str = putStr str
 printWhere(Just fn) str = writeFile fn str
 
+getEngine :: String -> (String -> Either String UniversalContent)
+getEngine format = case format of
+    "json"      -> jsonEngine
+    "xml"       -> xmlEngine
+    "markdown"  -> markdownEngine
+
+runEngine :: String -> Args -> Either String String
+runEngine content (Args _ (Just format) _ (Just out)) =
+    case getEngine format content of
+        Right ok -> Right (runFormatter (getFormatter out) ok)
+        Left err -> Left err
+runEngine content (Args _ _ _ (Just out)) =
+    case jsonEngine content of
+        Right ok -> Right (runFormatter (getFormatter out) ok)
+        Left _ -> case xmlEngine content of
+            Right ok -> Right (runFormatter (getFormatter out) ok)
+            Left err -> case markdownEngine content of
+                Right ok -> Right (runFormatter (getFormatter out) ok)
+                Left err -> Left "err: could not convert"
+
 run :: Args -> IO ()
 run args = do
     content <- readFile (fromJust $ inputFile args)
-    case jsonEngine content of
-        Right v ->
-            printWhere (outputFile args) (runFormatter (getFormatter args) v)
-        Left _ -> case xmlEngine content of
-            Right v ->  printWhere (outputFile args)
-                (runFormatter (getFormatter args) v)
-            _ -> putStr "err"
+    case runEngine content args of
+        Right result -> printWhere (outputFile args) result
+        Left errMsg -> putStrLn errMsg >> exitWith (ExitFailure 84)
 
 
 main :: IO ()
